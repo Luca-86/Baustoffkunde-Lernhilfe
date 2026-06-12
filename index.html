@@ -1,10 +1,1417 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <title>Meine Website</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baustoffkunde – Lernhilfe & Klausurvorbereitung</title>
+<style>
+:root{
+  --bg:#f4f6fb; --bg-2:#ffffff; --bg-3:#eef1f8; --text:#1c2433; --text-2:#5a6478;
+  --primary:#2563eb; --primary-2:#1d4ed8; --accent:#0ea5e9; --border:#dde3ee;
+  --green:#16a34a; --red:#dc2626; --amber:#d97706; --shadow:0 4px 18px rgba(20,40,90,.08);
+  --radius:14px;
+}
+html[data-theme="dark"]{
+  --bg:#0f1420; --bg-2:#171e2e; --bg-3:#1f283c; --text:#e7ecf5; --text-2:#9aa6bd;
+  --primary:#3b82f6; --primary-2:#60a5fa; --accent:#22d3ee; --border:#2a344c;
+  --green:#22c55e; --red:#f87171; --amber:#fbbf24; --shadow:0 4px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);
+  color:var(--text);line-height:1.6;transition:background .3s,color .3s;-webkit-font-smoothing:antialiased}
+a{color:var(--primary)}
+
+/* ---------- LOGIN ---------- */
+#login{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1e3a8a,#0ea5e9);padding:20px}
+#login .card{background:var(--bg-2);color:var(--text);padding:38px 34px;border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:400px;width:100%;text-align:center}
+#login h1{font-size:1.5rem;margin-bottom:6px}
+#login p{color:var(--text-2);font-size:.92rem;margin-bottom:22px}
+#login .logo{font-size:2.6rem;margin-bottom:10px}
+#login input{width:100%;padding:13px 15px;border:2px solid var(--border);border-radius:12px;
+  font-size:1rem;background:var(--bg);color:var(--text);margin-bottom:14px}
+#login input:focus{outline:none;border-color:var(--primary)}
+#login button{width:100%;padding:13px;border:none;border-radius:12px;background:var(--primary);
+  color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s}
+#login button:hover{background:var(--primary-2)}
+#login .err{color:var(--red);font-size:.88rem;margin-top:12px;min-height:18px}
+#login .hint{margin-top:18px;font-size:.78rem;color:var(--text-2)}
+
+/* ---------- LAYOUT ---------- */
+#app{display:none}
+.topbar{position:sticky;top:0;z-index:90;display:flex;align-items:center;gap:14px;
+  background:var(--bg-2);border-bottom:1px solid var(--border);padding:10px 18px;box-shadow:var(--shadow)}
+.topbar .brand{font-weight:700;font-size:1.12rem;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.topbar .brand .emoji{font-size:1.35rem}
+.menu-btn{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text);display:none}
+.search-wrap{flex:1;position:relative;max-width:520px}
+.search-wrap input{width:100%;padding:9px 14px 9px 38px;border:1px solid var(--border);border-radius:30px;
+  background:var(--bg);color:var(--text);font-size:.95rem}
+.search-wrap input:focus{outline:none;border-color:var(--primary)}
+.search-wrap .ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-2)}
+.search-results{position:absolute;top:46px;left:0;right:0;background:var(--bg-2);border:1px solid var(--border);
+  border-radius:12px;box-shadow:var(--shadow);max-height:340px;overflow:auto;display:none;z-index:120}
+.search-results .item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border)}
+.search-results .item:last-child{border-bottom:none}
+.search-results .item:hover{background:var(--bg-3)}
+.search-results .item b{color:var(--primary)}
+.search-results .item small{color:var(--text-2);display:block}
+.search-results .none{padding:14px;color:var(--text-2);text-align:center}
+.top-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;width:40px;height:40px;
+  font-size:1.15rem;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;transition:.2s}
+.icon-btn:hover{background:var(--primary);color:#fff}
+
+.layout{display:flex;max-width:1500px;margin:0 auto}
+.sidebar{width:290px;flex-shrink:0;background:var(--bg-2);border-right:1px solid var(--border);
+  height:calc(100vh - 61px);position:sticky;top:61px;overflow-y:auto;padding:16px 12px}
+.sidebar h3{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-2);
+  margin:16px 10px 8px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;cursor:pointer;
+  font-size:.93rem;font-weight:600;transition:.15s;margin-bottom:2px}
+.nav-item:hover{background:var(--bg-3)}
+.nav-item.active{background:var(--primary);color:#fff}
+.nav-item .em{font-size:1.1rem}
+.nav-sub{margin:2px 0 8px 14px;border-left:2px solid var(--border);padding-left:6px}
+.nav-sub .nav-item{font-weight:500;font-size:.86rem;padding:7px 10px}
+.progress-box{margin:6px 10px 14px;background:var(--bg-3);border-radius:12px;padding:12px}
+.progress-box .lbl{font-size:.78rem;color:var(--text-2);display:flex;justify-content:space-between;margin-bottom:6px}
+.bar{height:9px;background:var(--border);border-radius:6px;overflow:hidden}
+.bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--accent));width:0;transition:width .5s}
+
+.main{flex:1;min-width:0;padding:26px 30px 80px}
+
+/* ---------- HERO / DASHBOARD ---------- */
+.hero{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border-radius:var(--radius);
+  padding:30px 32px;margin-bottom:24px;box-shadow:var(--shadow)}
+.hero h1{font-size:1.75rem;margin-bottom:8px}
+.hero p{opacity:.95;max-width:640px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:26px}
+.stat{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.stat .n{font-size:1.8rem;font-weight:700;color:var(--primary)}
+.stat .t{color:var(--text-2);font-size:.85rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.tcard{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+  cursor:pointer;transition:.2s;box-shadow:var(--shadow)}
+.tcard:hover{transform:translateY(-3px);border-color:var(--primary)}
+.tcard .em{font-size:2rem;margin-bottom:8px}
+.tcard h3{font-size:1.05rem;margin-bottom:4px}
+.tcard p{font-size:.84rem;color:var(--text-2)}
+
+/* ---------- CONTENT / ACCORDION ---------- */
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.section-head .em{font-size:2.1rem}
+.section-head h2{font-size:1.5rem}
+.acc{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;
+  overflow:hidden;box-shadow:var(--shadow)}
+.acc-head{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
+.acc-head:hover{background:var(--bg-3)}
+.acc-head .title{font-weight:600;font-size:1.05rem;flex:1}
+.acc-head .fav{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-2);transition:.15s}
+.acc-head .fav.on{color:var(--amber)}
+.acc-head .chev{transition:transform .25s;color:var(--text-2);font-size:1.1rem}
+.acc.open .chev{transform:rotate(90deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.acc.open .acc-body{max-height:6000px}
+.acc-inner{padding:4px 20px 22px}
+.acc-inner h4{margin:16px 0 6px;font-size:1rem;color:var(--primary-2)}
+.acc-inner ul,.acc-inner ol{margin:8px 0 8px 22px}
+.acc-inner li{margin-bottom:4px}
+.acc-inner p{margin-bottom:8px}
+.acc-inner table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.9rem}
+.acc-inner th,.acc-inner td{border:1px solid var(--border);padding:7px 10px;text-align:left}
+.acc-inner th{background:var(--bg-3)}
+.formula{background:var(--bg-3);border-left:4px solid var(--primary);padding:10px 14px;border-radius:8px;
+  font-family:"Cambria Math","Times New Roman",serif;font-size:1.05rem;margin:10px 0;overflow-x:auto}
+.callout{border-radius:10px;padding:12px 15px;margin:14px 0;font-size:.92rem}
+.callout.merk{background:rgba(22,163,74,.12);border-left:4px solid var(--green)}
+.callout.klausur{background:rgba(217,119,6,.13);border-left:4px solid var(--amber)}
+.callout b{display:block;margin-bottom:3px}
+html[data-theme="dark"] .callout.merk{background:rgba(34,197,94,.14)}
+html[data-theme="dark"] .callout.klausur{background:rgba(251,191,36,.13)}
+
+/* ---------- EXERCISE ---------- */
+.ex{background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:16px}
+.ex .extag{display:inline-block;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;font-weight:700;
+  background:var(--primary);color:#fff;padding:3px 9px;border-radius:20px;margin-bottom:10px}
+.ex .q{font-weight:600;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:var(--bg-2);border:1.5px solid var(--border);
+  border-radius:10px;padding:10px 13px;margin-bottom:8px;cursor:pointer;color:var(--text);font-size:.93rem;transition:.15s}
+.opt:hover{border-color:var(--primary)}
+.opt.correct{border-color:var(--green);background:rgba(22,163,74,.15)}
+.opt.wrong{border-color:var(--red);background:rgba(220,38,38,.13)}
+.opt:disabled{cursor:default}
+.cloze-inp{border:none;border-bottom:2px solid var(--primary);background:transparent;color:var(--text);
+  font-size:.95rem;padding:2px 4px;min-width:120px;font-family:inherit}
+.cloze-inp:focus{outline:none}
+.ex-feedback{margin-top:10px;font-size:.9rem;padding:10px 12px;border-radius:8px;display:none}
+.ex-feedback.ok{display:block;background:rgba(22,163,74,.13);color:var(--green)}
+.ex-feedback.no{display:block;background:rgba(220,38,38,.12);color:var(--red)}
+.ex-btn{background:var(--primary);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-weight:600;
+  cursor:pointer;font-size:.9rem;margin-top:4px}
+.ex-btn:hover{background:var(--primary-2)}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.match-col .mitem{background:var(--bg-2);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;
+  margin-bottom:8px;cursor:pointer;font-size:.9rem;transition:.15s}
+.match-col .mitem.sel{border-color:var(--primary);background:rgba(37,99,235,.12)}
+.match-col .mitem.done{border-color:var(--green);background:rgba(22,163,74,.13);cursor:default;opacity:.75}
+.match-col h5{font-size:.78rem;text-transform:uppercase;color:var(--text-2);margin-bottom:8px;letter-spacing:.5px}
+
+/* ---------- QUIZ MODE ---------- */
+.quiz-card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius);padding:26px;
+  box-shadow:var(--shadow);max-width:760px;margin:0 auto}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:var(--text-2);font-size:.88rem}
+.quiz-q{font-size:1.18rem;font-weight:600;margin:14px 0 18px}
+.quiz-meta{font-size:.78rem;color:var(--text-2);margin-bottom:14px}
+.quiz-score{font-size:3rem;font-weight:700;color:var(--primary);text-align:center;margin:10px 0}
+.quiz-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+/* ---------- FAVORITES EMPTY ---------- */
+.empty{text-align:center;color:var(--text-2);padding:50px 20px}
+.empty .em{font-size:3rem;display:block;margin-bottom:10px}
+
+.tag{display:inline-block;background:var(--bg-3);border:1px solid var(--border);border-radius:20px;
+  padding:2px 10px;font-size:.78rem;color:var(--text-2);margin:2px 4px 2px 0}
+
+/* ---------- RESPONSIVE ---------- */
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:80}
+@media(max-width:880px){
+  .menu-btn{display:block}
+  .sidebar{position:fixed;left:0;top:61px;z-index:85;transform:translateX(-100%);transition:transform .3s;
+    box-shadow:var(--shadow);width:280px}
+  .sidebar.show{transform:translateX(0)}
+  .backdrop.show{display:block}
+  .main{padding:18px 16px 70px}
+  .topbar .brand .txt{display:none}
+  .match-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .hero{padding:22px 18px}.hero h1{font-size:1.4rem}
+  .search-wrap{max-width:none}
+}
+</style>
 </head>
 <body>
-  <h1>Hallo </h1>
-  <p>Ich habe gerade meine erste Website erstellt!</p>
+
+<!-- ============ LOGIN ============ -->
+<div id="login">
+  <div class="card">
+    <div class="logo">🏗️</div>
+    <h1>Baustoffkunde</h1>
+    <p>Lernhilfe & Klausurvorbereitung</p>
+    <input type="password" id="pw" placeholder="Passwort eingeben…" autocomplete="off">
+    <button onclick="checkPw()">Anmelden</button>
+    <div class="err" id="loginErr"></div>
+    <div class="hint">🔒 Geschützter Lernbereich für Bauingenieurwesen</div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="brand"><span class="emoji">🏗️</span><span class="txt">Baustoffkunde</span></div>
+    <div class="search-wrap">
+      <span class="ico">🔍</span>
+      <input id="search" placeholder="Begriffe, Kennwerte, Themen suchen…" autocomplete="off"
+             oninput="doSearch(this.value)" onfocus="doSearch(this.value)">
+      <div class="search-results" id="searchRes"></div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="goQuiz()" title="Quizmodus">🎯</button>
+      <button class="icon-btn" onclick="goFav()" title="Favoriten">⭐</button>
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Dunkel-/Hellmodus">🌙</button>
+    </div>
+  </div>
+
+  <div class="backdrop" id="backdrop" onclick="toggleSidebar()"></div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="progress-box">
+        <div class="lbl"><span>Lernfortschritt</span><span id="progPct">0%</span></div>
+        <div class="bar"><span id="progBar"></span></div>
+        <div class="lbl" style="margin-top:8px;margin-bottom:0"><span id="progTxt">0 von 0 Themen gelesen</span></div>
+      </div>
+      <div class="nav-item" onclick="showDash()"><span class="em">🏠</span> Startseite</div>
+      <div class="nav-item" onclick="goQuiz()"><span class="em">🎯</span> Quizmodus</div>
+      <div class="nav-item" onclick="goFav()"><span class="em">⭐</span> Favoriten</div>
+      <h3>Themenbereiche</h3>
+      <div id="navTopics"></div>
+    </aside>
+
+    <main class="main" id="content"></main>
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   DATENMODELL – Baustoffkunde Inhalte
+   =================================================================== */
+const DATA = [
+{
+  id:"grundlagen", em:"📐", title:"Grundlagen und Baustoffkenngrößen",
+  desc:"Anforderungen, Dichte, E-Modul, Rheologie, Anisotropie, Kriechen",
+  subs:[
+    {
+      id:"anforderungen", title:"Anforderungen an Baustoffe",
+      body:`<p>In der Klausur werden Anforderungen an Baustoffe über <b>drei Ebenen</b> geprüft – ökologisch, leistungsfähig und wirtschaftlich. Erst getrennt nennen, dann verknüpfen.</p>
+        <h4>Die drei Prüfungs-Ebenen</h4>
+        <table>
+          <tr><th>Ebene</th><th>Gefordert</th><th>Beispiel</th></tr>
+          <tr><td><b>Ökologisch</b></td><td>geringer Energie-/Rohstoffverbrauch, wenig CO₂, Recyclingfähigkeit, lange Nutzungsdauer</td><td>Recyclingbeton, Klinkerersatz, Holz aus nachhaltiger Forstwirtschaft</td></tr>
+          <tr><td><b>Leistungsfähig</b></td><td>Tragfähigkeit, Steifigkeit, Dauerhaftigkeit, Brand-/Wärme-/Schall-/Feuchteschutz</td><td>Beton für Druck, Stahl für Zug, Dämmstoff für Wärmeschutz</td></tr>
+          <tr><td><b>Wirtschaftlich</b></td><td>niedrige Lebenszykluskosten (Material, Verarbeitung, Transport, Wartung, Rückbau)</td><td>teurer, aber dauerhafter Baustoff schlägt billigen mit hoher Instandhaltung</td></tr>
+        </table>
+        <h4>Technische Eigenschaftsgruppen (Detaillierung)</h4>
+        <ul>
+          <li><b>Mechanisch:</b> Festigkeit (Druck, Zug, Biegung, Schub), Steifigkeit (E-Modul), Härte, Verschleißwiderstand.</li>
+          <li><b>Bauphysikalisch:</b> Wärmeleitfähigkeit, Schalldämmung, Feuchteverhalten, Brandverhalten.</li>
+          <li><b>Chemisch / Dauerhaftigkeit:</b> Korrosions-, Säure-, Frost-Tau-, Carbonatisierungs- und Chloridwiderstand.</li>
+        </ul>
+        <h4>Grundprinzip</h4>
+        <p>Ein Baustoff wird so gewählt, dass die <b>Beanspruchung ≤ Widerstand</b> über die geplante Nutzungsdauer gilt. Maßgeblich sind Gebrauchstauglichkeit (SLS) und Tragfähigkeit (ULS).</p>`,
+      merk:"Drei Prüfungs-Ebenen: ökologisch (Energie/CO₂/Recycling), leistungsfähig (Tragfähigkeit/Dauerhaftigkeit/Schutz) und wirtschaftlich (Lebenszykluskosten). Ein guter Baustoff erfüllt das ganze Anforderungsprofil über die Nutzungsdauer.",
+      klausur:"Klausurklassiker: 'Was müssen Baustoffe leisten?' → die 3 Ebenen ökologisch/leistungsfähig/wirtschaftlich getrennt nennen und verknüpfen.",
+      ex:[
+        {type:"mc",q:"In welche drei Ebenen werden die Anforderungen an Baustoffe in der Klausur typischerweise gegliedert?",
+         opts:["Mechanisch, thermisch, akustisch","Ökologisch, leistungsfähig, wirtschaftlich","Druck, Zug, Biegung","Fest, flüssig, gasförmig"],a:1,
+         exp:"Die drei geprüften Ebenen sind ökologisch, leistungsfähig und wirtschaftlich."},
+        {type:"mc",q:"Welche Eigenschaft zählt zur Ebene 'leistungsfähig'?",
+         opts:["Recyclingfähigkeit","Tragfähigkeit / Dauerhaftigkeit","Niedrige Lebenszykluskosten","CO₂-Bilanz"],a:1,
+         exp:"Tragfähigkeit und Dauerhaftigkeit gehören zur Leistungsfähigkeit. Recycling/CO₂ = ökologisch, Kosten = wirtschaftlich."},
+        {type:"tf",q:"Ein teurer, aber sehr dauerhafter Baustoff kann wirtschaftlicher sein als ein billiger mit hohem Instandhaltungsaufwand.",a:true,
+         exp:"Richtig – wirtschaftlich werden die Lebenszykluskosten betrachtet, nicht nur der Anschaffungspreis."}
+      ]
+    },
+    {
+      id:"dichte", title:"Dichte und Porigkeit",
+      body:`<p>Die verschiedenen Dichtebegriffe unterscheiden sich durch das berücksichtigte Volumen (mit/ohne Poren).</p>
+        <table>
+          <tr><th>Größe</th><th>Symbol</th><th>Volumenbezug</th></tr>
+          <tr><td>Reindichte</td><td>ρ</td><td>nur Feststoff (ohne jegliche Poren)</td></tr>
+          <tr><td>Rohdichte</td><td>ρ<sub>R</sub></td><td>Feststoff + alle Poren (geschl. + offen)</td></tr>
+          <tr><td>Schüttdichte</td><td>ρ<sub>S</sub></td><td>inkl. Zwischenkornvolumen (Haufwerk)</td></tr>
+        </table>
+        <h4>Porosität</h4>
+        <div class="formula">p = 1 − ρ<sub>R</sub> / ρ &nbsp;&nbsp;=&nbsp;&nbsp; (1 − Rohdichte/Reindichte)</div>
+        <p>Die <b>Gesamtporosität</b> p setzt sich aus offenen (kapillaren) und geschlossenen Poren zusammen. Offene Poren bestimmen Wasseraufnahme und Dauerhaftigkeit.</p>
+        <h4>Bedeutung</h4>
+        <ul>
+          <li>Hohe Porosität → niedrigere Festigkeit, höhere Wärmedämmung, mehr Wasseraufnahme.</li>
+          <li>Porenstruktur steuert Frostwiderstand, Carbonatisierung und Kapillartransport.</li>
+        </ul>`,
+      merk:"Reindichte = ohne Poren, Rohdichte = mit Poren, Schüttdichte = mit Poren + Hohlräumen.",
+      klausur:"Klassische Rechenaufgabe: aus Rohdichte und Reindichte die Porosität p = 1 − ρ_R/ρ berechnen. Einheiten beachten!",
+      ex:[
+        {type:"calc",q:"Ein Gestein hat eine Reindichte ρ = 2,65 g/cm³ und eine Rohdichte ρ_R = 2,12 g/cm³. Wie groß ist die Porosität p in %? (1 Nachkommastelle)",
+         a:"20.0", tol:0.6, unit:"%",
+         exp:"p = 1 − ρ_R/ρ = 1 − 2,12/2,65 = 1 − 0,80 = 0,20 = 20,0 %."},
+        {type:"mc",q:"Welche Dichte berücksichtigt das Volumen der Hohlräume zwischen den Körnern (Haufwerk)?",
+         opts:["Reindichte","Rohdichte","Schüttdichte","Trockendichte"],a:2,
+         exp:"Die Schüttdichte bezieht das Zwischenkornvolumen eines Haufwerks mit ein."}
+      ]
+    },
+    {
+      id:"emodul", title:"E-Modul (Elastizitätsmodul)",
+      body:`<p>Der Elastizitätsmodul E beschreibt den Widerstand eines Werkstoffs gegen elastische (reversible) Verformung – die <b>Steifigkeit</b>. Er ist die Steigung der Spannungs-Dehnungs-Linie im linear-elastischen Bereich (Hookesches Gesetz).</p>
+        <div class="formula">σ = E · ε &nbsp;⇒&nbsp; E = σ / ε &nbsp;&nbsp;[N/mm²]</div>
+        <p>mit σ = Spannung [N/mm²], ε = Dehnung [–] (dimensionslos).</p>
+        <h4>Richtwerte</h4>
+        <table>
+          <tr><th>Baustoff</th><th>E-Modul [N/mm²]</th></tr>
+          <tr><td>Baustahl</td><td>≈ 210.000</td></tr>
+          <tr><td>Beton (C25/30)</td><td>≈ 31.000</td></tr>
+          <tr><td>Holz (∥ Faser)</td><td>≈ 10.000–14.000</td></tr>
+        </table>
+        <p><b>Hoher E-Modul → steifer Werkstoff</b> (geringe Verformung, z. B. Stahl). <b>Niedriger E-Modul → nachgiebig</b> (große Verformung, z. B. Dämmstoff). Achtung: E-Modul ist nicht gleich Festigkeit!</p>
+        <h4>Ist der E-Modul ein werkstofftypischer Wert?</h4>
+        <p>Ja, grundsätzlich werkstofftypisch – aber bei realen Baustoffen abhängig von <b>Rohdichte, Feuchte, Temperatur, Alter, Belastungsdauer, Richtung</b> (Anisotropie!) und Zusammensetzung. Bei Beton z. B. von Festigkeitsklasse, Zuschlag und Alter.</p>
+        <h4>Folgen einer falschen E-Modul-Annahme</h4>
+        <ul>
+          <li><b>E zu hoch angesetzt</b> → Verformungen werden <i>unterschätzt</i> → Bauteile biegen sich stärker durch als geplant (Gebrauchstauglichkeit gefährdet).</li>
+          <li><b>E zu niedrig angesetzt</b> → Verformungen werden <i>überschätzt</i> → unwirtschaftlich große Querschnitte.</li>
+          <li>Bei Verbundbauteilen: falsche Lastverteilung, Rissbildung, Schäden an Anschlüssen.</li>
+        </ul>`,
+      merk:"E-Modul = Steigung der σ-ε-Linie = Steifigkeit. Stahl ≈ 210.000, Beton ≈ 30.000, Holz ≈ 10.000 N/mm². Hoch = steif, niedrig = nachgiebig.",
+      klausur:"Verwechslungsgefahr Festigkeit ↔ Steifigkeit. Merke die Fehlerfolgen: E zu hoch → Verformung unterschätzt; E zu niedrig → unwirtschaftlich. E ist werkstofftypisch, aber von Feuchte/Alter/Richtung abhängig.",
+      ex:[
+        {type:"calc",q:"Ein Stab erfährt eine Spannung σ = 210 N/mm² und dehnt sich um ε = 0,001. Wie groß ist der E-Modul in N/mm²?",
+         a:"210000", tol:500, unit:"N/mm²",
+         exp:"E = σ/ε = 210 / 0,001 = 210.000 N/mm² (entspricht Baustahl)."},
+        {type:"mc",q:"Was passiert, wenn der E-Modul bei der Bemessung zu HOCH angesetzt wird?",
+         opts:["Verformungen werden unterschätzt → zu große Durchbiegung","Verformungen werden überschätzt → zu große Querschnitte","Die Festigkeit sinkt","Nichts, der E-Modul ist irrelevant"],a:0,
+         exp:"Ein zu hoher E-Modul lässt das Bauteil steifer erscheinen → die tatsächliche Durchbiegung wird unterschätzt."},
+        {type:"tf",q:"Ein hoher E-Modul bedeutet automatisch eine hohe Festigkeit.",a:false,
+         exp:"Falsch! E-Modul = Steifigkeit (Verformungswiderstand), Festigkeit = Bruchwiderstand. Beides ist unabhängig."}
+      ]
+    },
+    {
+      id:"rheologie", title:"Formänderung und Rheologie",
+      body:`<p>Die Rheologie beschreibt das Fließ- und Verformungsverhalten von Stoffen. Man unterscheidet idealisierte Grundmodelle:</p>
+        <ul>
+          <li><b>Elastisch (Hooke-Feder):</b> Verformung sofort, vollständig reversibel. σ = E·ε.</li>
+          <li><b>Viskos (Newton-Dämpfer):</b> Verformung zeitabhängig, bleibend. σ proportional zur Dehnrate.</li>
+          <li><b>Plastisch (St.-Venant):</b> Verformung erst ab Fließgrenze, bleibend.</li>
+        </ul>
+        <h4>Kombinierte Modelle</h4>
+        <ul>
+          <li><b>Viskoelastisch (Maxwell / Kelvin-Voigt):</b> Feder + Dämpfer → beschreibt Kriechen und Relaxation (z. B. Beton, Kunststoffe).</li>
+          <li><b>Viskoplastisch (Bingham):</b> beschreibt Frischbeton/Mörtel: fließt erst oberhalb einer Fließgrenze τ₀.</li>
+        </ul>
+        <h4>Verformungsarten</h4>
+        <p>Elastisch (reversibel) ↔ plastisch/viskos (bleibend); zeitunabhängig ↔ zeitabhängig (Kriechen).</p>`,
+      merk:"Feder = elastisch (Hooke), Dämpfer = viskos (Newton), Reibelement = plastisch (St. Venant). Beton ist viskoelastisch.",
+      klausur:"Frischbeton wird als Bingham-Medium beschrieben (Fließgrenze + plastische Viskosität). Häufige Zuordnungsaufgabe der Modelle!",
+      ex:[
+        {type:"match",q:"Ordne die rheologischen Grundelemente ihrem Verhalten zu:",
+         pairs:[["Hooke-Feder","elastisch, reversibel"],["Newton-Dämpfer","viskos, zeitabhängig"],["St.-Venant-Element","plastisch, ab Fließgrenze"],["Bingham-Modell","Frischbeton/Mörtel"]],
+         exp:"Feder=elastisch, Dämpfer=viskos, Reibelement=plastisch, Bingham beschreibt Frischbeton."}
+      ]
+    },
+    {
+      id:"anisotropie", title:"Anisotropie und Isotropie",
+      body:`<p>Diese Begriffe beschreiben die Richtungsabhängigkeit von Materialeigenschaften.</p>
+        <ul>
+          <li><b>Isotrop:</b> Eigenschaften in allen Richtungen gleich (z. B. Glas, Stahl, unbewehrter Beton im Idealfall).</li>
+          <li><b>Anisotrop:</b> Eigenschaften richtungsabhängig (z. B. Holz, Faserverbundwerkstoffe).</li>
+          <li><b>Orthotrop:</b> Spezialfall der Anisotropie mit drei zueinander senkrechten Symmetrieebenen (Holz: längs, radial, tangential).</li>
+        </ul>
+        <h4>Beispiel Holz</h4>
+        <p>Holz ist der klassische anisotrope (orthotrope) Baustoff: Festigkeit und E-Modul sind <b>parallel zur Faser</b> deutlich höher als <b>quer zur Faser</b> (Faktor 10–30).</p>`,
+      merk:"Iso = gleich (alle Richtungen), Aniso = ungleich (richtungsabhängig). Holz = orthotrop (3 Achsen: längs/radial/tangential).",
+      klausur:"Holz als Paradebeispiel der Anisotropie. Festigkeit ∥ Faser ≫ ⊥ Faser – sehr beliebte Wahr/Falsch-Frage.",
+      ex:[
+        {type:"mc",q:"Welcher Baustoff ist typischerweise anisotrop (orthotrop)?",
+         opts:["Glas","Baustahl","Holz","Gussbeton"],a:2,
+         exp:"Holz ist orthotrop – Eigenschaften unterscheiden sich in längs-, radial- und tangentialer Richtung."},
+        {type:"tf",q:"Bei isotropen Werkstoffen sind die mechanischen Eigenschaften richtungsunabhängig.",a:true,
+         exp:"Richtig – isotrop bedeutet identische Eigenschaften in allen Raumrichtungen."}
+      ]
+    },
+    {
+      id:"kriechen", title:"Kriechen und Relaxieren",
+      body:`<p>Beides sind zeitabhängige (viskoelastische) Phänomene unter Langzeitbelastung – besonders relevant bei Beton und Holz.</p>
+        <table>
+          <tr><th></th><th>Kriechen</th><th>Relaxieren</th></tr>
+          <tr><td>Last/Spannung</td><td>σ = konstant</td><td>ε = konstant</td></tr>
+          <tr><td>Folge</td><td>Verformung ε nimmt zu</td><td>Spannung σ nimmt ab</td></tr>
+        </table>
+        <h4>Kriechen</h4>
+        <p>Bei <b>konstanter Spannung</b> wächst die Dehnung über die Zeit. Beim Beton: Kriechzahl φ beschreibt das Verhältnis Kriechdehnung/elastische Dehnung (φ ≈ 1,5–3).</p>
+        <div class="formula">ε<sub>cc</sub>(t) = φ(t) · ε<sub>el</sub></div>
+        <h4>Relaxieren</h4>
+        <p>Bei <b>konstanter Dehnung</b> baut sich die Spannung mit der Zeit ab – wichtig z. B. beim Spannstahl (Spannkraftverlust).</p>`,
+      merk:"Kriechen: Spannung konstant → Dehnung steigt. Relaxieren: Dehnung konstant → Spannung sinkt.",
+      klausur:"Eselsbrücke: K wie Kriechen = Kraft konstant. Relaxation = Spannstahl verliert Vorspannung. Sehr häufige Verwechslung!",
+      ex:[
+        {type:"cloze",q:"Vervollständige: Beim ___ bleibt die Spannung konstant und die Dehnung nimmt zu. Beim ___ bleibt die Dehnung konstant und die Spannung nimmt ab.",
+         blanks:["Kriechen","Relaxieren"],
+         exp:"Kriechen = konstante Spannung, zunehmende Dehnung. Relaxieren = konstante Dehnung, abnehmende Spannung."},
+        {type:"mc",q:"Welche Größe beschreibt das Kriechen von Beton?",
+         opts:["Querdehnzahl ν","Kriechzahl φ","Reibungsbeiwert μ","Wärmedehnzahl α"],a:1,
+         exp:"Die Kriechzahl φ setzt die Kriechdehnung ins Verhältnis zur elastischen Dehnung."}
+      ]
+    }
+  ]
+},
+{
+  id:"gesteine", em:"🪨", title:"Gesteine und Gesteinskörnungen",
+  desc:"Gesteinskreislauf, Gesteinsarten, Sieblinie, Fuller-Parabel, AKR",
+  subs:[
+    {
+      id:"kreislauf", title:"Gesteinskreislauf",
+      body:`<p>Der Gesteinskreislauf beschreibt die ständige Umwandlung der drei Gesteinshauptgruppen ineinander durch geologische Prozesse.</p>
+        <h4>Ablauf</h4>
+        <ol>
+          <li><b>Magma</b> erstarrt → <b>Magmatite (Erstarrungsgestein)</b></li>
+          <li>Verwitterung & Erosion → Transport → Ablagerung → Verfestigung (Diagenese) → <b>Sedimentite (Ablagerungsgestein)</b></li>
+          <li>Druck & Temperatur (Metamorphose) → <b>Metamorphite (Umwandlungsgestein)</b></li>
+          <li>Aufschmelzung → wieder Magma → Kreislauf geschlossen</li>
+        </ol>
+        <p>Treibende Kräfte: innere Wärme der Erde (Magmatismus, Metamorphose) und äußere Kräfte (Verwitterung, Erosion, Sedimentation).</p>`,
+      merk:"Drei Gruppen: Magmatite (erstarrt), Sedimentite (abgelagert), Metamorphite (umgewandelt) – ständiger Kreislauf.",
+      klausur:"Reihenfolge der Prozesse merken: Erstarrung → Verwitterung/Sedimentation → Metamorphose → Aufschmelzung.",
+      ex:[
+        {type:"mc",q:"Durch welchen Prozess entstehen Metamorphite?",
+         opts:["Erstarrung von Magma","Ablagerung und Verfestigung","Umwandlung durch Druck und Temperatur","Verwitterung an der Oberfläche"],a:2,
+         exp:"Metamorphite entstehen durch Umwandlung bestehender Gesteine unter hohem Druck und/oder hoher Temperatur."}
+      ]
+    },
+    {
+      id:"arten", title:"Gesteinsarten",
+      body:`<p>Die drei Hauptgruppen mit typischen Vertretern und Eigenschaften:</p>
+        <table>
+          <tr><th>Gruppe</th><th>Entstehung</th><th>Beispiele</th></tr>
+          <tr><td>Magmatite (Erstarrung)</td><td>Erkaltung von Magma/Lava</td><td>Granit, Basalt, Diorit</td></tr>
+          <tr><td>Sedimentite (Ablagerung)</td><td>Verwitterung + Diagenese</td><td>Kalkstein, Sandstein, Ton</td></tr>
+          <tr><td>Metamorphite (Umwandlung)</td><td>Druck & Temperatur</td><td>Marmor, Gneis, Schiefer</td></tr>
+        </table>
+        <h4>Unterscheidung Magmatite</h4>
+        <ul>
+          <li><b>Tiefengestein (Plutonite):</b> langsam erstarrt → grobkristallin (z. B. Granit).</li>
+          <li><b>Ergussgestein (Vulkanite):</b> schnell erstarrt → feinkristallin/glasig (z. B. Basalt).</li>
+        </ul>
+        <p>Für den Beton ist v. a. der <b>Quarzgehalt</b> (Alkali-Reaktivität) und die Festigkeit/Reinheit relevant.</p>`,
+      merk:"Granit = Tiefengestein (grobkörnig), Basalt = Ergussgestein (feinkörnig), Marmor = umgewandelter Kalkstein.",
+      klausur:"Beliebte Zuordnung Gestein↔Gruppe. Kalkstein→Sediment, Marmor→Metamorphit, Granit→Magmatit.",
+      ex:[
+        {type:"match",q:"Ordne jedem Gestein seine Hauptgruppe zu:",
+         pairs:[["Granit","Magmatit"],["Sandstein","Sedimentit"],["Gneis","Metamorphit"],["Basalt","Magmatit (Erguss)"]],
+         exp:"Granit & Basalt = Magmatite, Sandstein = Sedimentit, Gneis = Metamorphit."}
+      ]
+    },
+    {
+      id:"sieblinie", title:"Sieblinie (Korngrößenverteilung)",
+      body:`<p>Die Sieblinie stellt die <b>Korngrößenverteilung</b> einer Gesteinskörnung dar: kumulierter Siebdurchgang (Massen-%) über der Maschenweite (log).</p>
+        <h4>Durchführung</h4>
+        <p>Probe durch Siebsatz (z. B. 0,25 / 0,5 / 1 / 2 / 4 / 8 / 16 / 31,5 mm). Rückstände wiegen → Siebdurchgang berechnen.</p>
+        <h4>Bewertung</h4>
+        <ul>
+          <li><b>Steile Sieblinie</b> → enge Kornverteilung (Ausfallkörnung), hoher Hohlraumgehalt.</li>
+          <li><b>Flache/stetige Sieblinie</b> → weite Verteilung, gute Packungsdichte, geringer Zementleimbedarf.</li>
+        </ul>
+        <p>Genormte Regelsieblinien (A, B, C nach DIN 1045-2) begrenzen günstige Bereiche. Die <b>Sieblinie B</b> gilt als günstig (gut verarbeitbar, wirtschaftlich).</p>`,
+      merk:"Sieblinie = Siebdurchgang [%] über Maschenweite. Stetig & im Bereich B = günstig (gute Packung, wenig Zementleim).",
+      klausur:"Rechenaufgabe: aus Siebrückständen den kumulierten Durchgang berechnen. Gut/ungünstig der Sieblinie beurteilen.",
+      ex:[
+        {type:"calc",q:"Eine Probe von 1000 g hat folgende Siebrückstände (oberhalb): 200 g. Wie groß ist der Siebdurchgang an diesem Sieb in %?",
+         a:"80", tol:0.5, unit:"%",
+         exp:"Durchgang = (1000−200)/1000 = 800/1000 = 80 %. Der Rückstand bleibt oben, der Rest fällt durch."},
+        {type:"tf",q:"Eine stetige (flache) Sieblinie führt in der Regel zu einer dichteren Kornpackung und geringerem Zementleimbedarf.",a:true,
+         exp:"Richtig – weit gestufte Körnungen füllen die Hohlräume besser aus."}
+      ]
+    },
+    {
+      id:"fuller", title:"Fuller-Parabel (Idealsieblinie)",
+      body:`<p>Die Fuller-Parabel beschreibt die theoretisch <b>dichteste Kornpackung</b> (geringster Hohlraumgehalt) einer Gesteinskörnung.</p>
+        <div class="formula">A(d) = 100 · √(d / D) &nbsp;&nbsp;[%]</div>
+        <p>mit A = Siebdurchgang [%], d = betrachtete Korngröße, D = Größtkorn.</p>
+        <h4>Bedeutung</h4>
+        <ul>
+          <li>Ziel: maximale Packungsdichte → minimaler Hohlraum → geringster Zementleim-/Bindemittelbedarf.</li>
+          <li>Reale Sieblinien orientieren sich an der Fuller-Parabel, weichen aber aus Verarbeitbarkeitsgründen (Mehlkorn) ab.</li>
+        </ul>
+        <p>Allgemein wird der Exponent oft mit n = 0,5 (Fuller) bis n ≈ 0,3–0,4 angesetzt: A = 100·(d/D)<sup>n</sup>.</p>`,
+      merk:"Fuller-Parabel A = 100·√(d/D) → ideale, dichteste Kornpackung mit minimalem Hohlraum.",
+      klausur:"Rechenaufgabe sehr beliebt: Siebdurchgang nach Fuller für ein bestimmtes d/D berechnen. Wurzelformel auswendig können!",
+      ex:[
+        {type:"calc",q:"Größtkorn D = 16 mm. Welcher Siebdurchgang A ergibt sich nach Fuller für die Korngröße d = 4 mm (in %)?",
+         a:"50", tol:1, unit:"%",
+         exp:"A = 100·√(d/D) = 100·√(4/16) = 100·√0,25 = 100·0,5 = 50 %."},
+        {type:"mc",q:"Welches Ziel verfolgt die Fuller-Parabel?",
+         opts:["Maximale Festigkeit des Zementsteins","Dichteste Kornpackung / minimaler Hohlraum","Höchste Wasseraufnahme","Geringste Rohdichte"],a:1,
+         exp:"Die Fuller-Parabel liefert die theoretisch dichteste Packung und somit minimalen Hohlraum- und Leimbedarf."}
+      ]
+    },
+    {
+      id:"akr", title:"AKR – Alkali-Kieselsäure-Reaktion",
+      body:`<p>Die AKR (umgangssprachlich „Betonkrebs") ist eine schädigende chemische Reaktion im Beton zwischen <b>alkalireicher Porenlösung</b> und <b>reaktiver Kieselsäure (SiO₂)</b> in bestimmten Gesteinskörnungen.</p>
+        <h4>Reaktionsbedingungen (alle 3 nötig!)</h4>
+        <ol>
+          <li>Reaktionsfähige (amorphe) Kieselsäure in der Gesteinskörnung (z. B. Opal, bestimmte Grauwacken, Flint).</li>
+          <li>Hohe Alkalität (Na⁺/K⁺-Ionen aus Zement) in der Porenlösung.</li>
+          <li>Ausreichende Feuchtigkeit (> ~80 % rel. Luftfeuchte).</li>
+        </ol>
+        <h4>Schadensmechanismus</h4>
+        <p>Es bildet sich ein quellfähiges <b>Alkali-Kieselsäure-Gel</b>, das bei Feuchtigkeit Wasser aufnimmt und stark quillt → innere Sprengwirkung → Rissbildung (netzartig), Abplatzungen.</p>
+        <h4>Gegenmaßnahmen</h4>
+        <ul>
+          <li>Alkaliarme Zemente (NA-Zemente), Begrenzung des Na₂O-Äquivalents.</li>
+          <li>Unbedenkliche Gesteinskörnungen (Alkaliempfindlichkeitsklasse E I).</li>
+          <li>Puzzolane/Hüttensand (binden Alkalien), Feuchtigkeit fernhalten.</li>
+        </ul>`,
+      merk:"AKR braucht 3 Dinge gleichzeitig: reaktives SiO₂ + Alkalien + Feuchte → quellendes Gel → Risse.",
+      klausur:"Sehr beliebt: „Welche 3 Bedingungen müssen für AKR erfüllt sein?“ Und: Gegenmaßnahme = NA-Zement (alkaliarm).",
+      ex:[
+        {type:"mc",q:"Welche drei Bedingungen müssen für eine AKR GLEICHZEITIG vorliegen?",
+         opts:["Frost, Tausalz, CO₂","Reaktives SiO₂, Alkalien, Feuchte","Chloride, Sauerstoff, Wasser","Hohe Temperatur, Druck, Säure"],a:1,
+         exp:"AKR benötigt reaktive Kieselsäure, hohe Alkalität und ausreichend Feuchtigkeit – alle drei zugleich."},
+        {type:"tf",q:"Der Einsatz alkaliarmer NA-Zemente ist eine wirksame Maßnahme gegen die AKR.",a:true,
+         exp:"Richtig – NA-Zemente reduzieren das Na₂O-Äquivalent und damit die schädigende Reaktion."}
+      ]
+    }
+  ]
+},
+{
+  id:"bindemittel", em:"⚗️", title:"Mineralische Bindemittel",
+  desc:"Gips, Kalk, Zement, Klassifizierung, Klinkerphasen, CEM-Arten",
+  subs:[
+    {
+      id:"gips", title:"Gips",
+      body:`<p>Gips ist ein <b>nicht hydraulisches</b> Bindemittel auf Basis von Calciumsulfat. Es erhärtet durch Wasseranlagerung (Hydratation zu Dihydrat), ist aber nicht wasserbeständig → nur für Innenbereiche.</p>
+        <h4>Herstellung (Brennen / Entwässerung)</h4>
+        <div class="formula">CaSO₄·2H₂O &nbsp;—(Brennen ~130–180 °C)→&nbsp; CaSO₄·½H₂O + 1½H₂O</div>
+        <p>Aus dem Rohgips (Dihydrat) entsteht durch Brennen der <b>Halbhydrat-Gips</b> (Stuckgips).</p>
+        <h4>Abbinden (Erhärten)</h4>
+        <div class="formula">CaSO₄·½H₂O + 1½H₂O → CaSO₄·2H₂O (+ Wärme)</div>
+        <p>Beim Anmachen mit Wasser bildet sich wieder das Dihydrat – die Kristalle verfilzen und erhärten. Charakteristisch: <b>geringe Volumenzunahme</b> beim Abbinden (gut für Formen/Putze).</p>
+        <ul>
+          <li>Vorteile: schnelle Erhärtung, gute Oberflächen, brandhemmend (Kristallwasser), feuchteregulierend.</li>
+          <li>Nachteile: nicht wasserbeständig, geringe Festigkeit, korrosiv für Stahl bei Feuchte.</li>
+        </ul>
+        <h4>Warum ist Industriegips weniger fest als natürlicher Gipsstein?</h4>
+        <p>Klausurfrage! Natürlicher Gipsstein ist über lange geologische Zeit gewachsen und besitzt ein <b>dichtes, zusammenhängendes Kristallgefüge</b>. Industriegips wird gebrannt, gemahlen, mit Wasser angerührt und <b>neu kristallisiert</b>. Dabei entstehen Poren; das überschüssige Anmachwasser verdunstet und hinterlässt zusätzliche Hohlräume.</p>
+        <p><b>Mehr Poren → geringere Rohdichte → geringere Festigkeit.</b> Industriegips erhärtet zwar wieder zu CaSO₄·2H₂O, aber nicht automatisch zu einem so dichten Gefüge wie der gewachsene Naturstein.</p>`,
+      merk:"Gips: Dihydrat → (brennen) → Halbhydrat → (Wasser) → Dihydrat. Nur innen (nicht wasserbeständig)! Industriegips poriger → weniger fest als Naturgips.",
+      klausur:"Beliebt: Gipskreislauf skizzieren UND erklären, warum Industriegips weniger fest ist (Poren durch Neukristallisation & verdunstendes Überschusswasser).",
+      ex:[
+        {type:"cloze",q:"Beim Brennen wird aus dem Roh-/Dihydrat-Gips das ___-Hydrat (Stuckgips). Mit Wasser bildet sich wieder das ___-Hydrat.",
+         blanks:["Halb","Di"],
+         exp:"Brennen: Dihydrat → Halbhydrat. Abbinden mit Wasser: Halbhydrat → Dihydrat."},
+        {type:"mc",q:"Warum ist industriell hergestellter Gips meist weniger fest als natürlicher Gipsstein?",
+         opts:["Er besteht aus einem anderen chemischen Stoff","Durch Neukristallisation und verdunstendes Überschusswasser entstehen Poren","Er wird nicht mit Wasser angemacht","Natürlicher Gips ist hydraulisch"],a:1,
+         exp:"Industriegips kristallisiert neu und enthält durch Überschusswasser viele Poren → geringere Rohdichte und Festigkeit."},
+        {type:"tf",q:"Gips ist ein hydraulisches Bindemittel und auch unter Wasser beständig.",a:false,
+         exp:"Falsch – Gips ist nicht hydraulisch und nicht wasserbeständig, daher nur im Innenbereich einsetzbar."}
+      ]
+    },
+    {
+      id:"kalk", title:"Kalk",
+      body:`<p>Luftkalk ist ein <b>nicht hydraulisches</b> Bindemittel, das durch Aufnahme von CO₂ aus der Luft erhärtet (Carbonatisierung).</p>
+        <h4>Der Kalkkreislauf</h4>
+        <ol>
+          <li><b>Brennen</b> (ca. 900–1200 °C): CaCO₃ → CaO + CO₂↑ (Branntkalk / gebrannter Kalk)</li>
+          <li><b>Löschen</b> mit Wasser: CaO + H₂O → Ca(OH)₂ + Wärme (Löschkalk, stark exotherm)</li>
+          <li><b>Erhärten/Carbonatisieren:</b> Ca(OH)₂ + CO₂ → CaCO₃ + H₂O (Kreis geschlossen)</li>
+        </ol>
+        <div class="formula">CaCO₃ →(Brennen)→ CaO →(+H₂O)→ Ca(OH)₂ →(+CO₂)→ CaCO₃</div>
+        <h4>Hydraulischer Kalk</h4>
+        <p>Hydraulischer Kalk (HL/NHL) enthält Tonbestandteile (Silikate) und kann teilweise auch unter Wasser erhärten – Übergang zum Zement.</p>`,
+      merk:"Kalkkreislauf: Brennen (CaCO₃→CaO) → Löschen (CaO→Ca(OH)₂) → Carbonatisieren (Ca(OH)₂→CaCO₃).",
+      klausur:"Die drei Reaktionsgleichungen des Kalkkreislaufs sind ein Klassiker. Luftkalk erhärtet durch CO₂-Aufnahme!",
+      ex:[
+        {type:"mc",q:"Wodurch erhärtet Luftkalk (Carbonatisierung)?",
+         opts:["Durch Wasseraufnahme unter Luftabschluss","Durch Aufnahme von CO₂ aus der Luft","Durch Hydratation wie Zement","Durch Verdunstung von Kristallwasser"],a:1,
+         exp:"Luftkalk Ca(OH)₂ reagiert mit CO₂ der Luft zu CaCO₃ – daher 'Luftkalk'."},
+        {type:"cloze",q:"Beim Brennen von Kalkstein entsteht aus ___ der Branntkalk ___ unter Abgabe von CO₂.",
+         blanks:["CaCO3","CaO"],
+         exp:"CaCO₃ → CaO + CO₂. Branntkalk ist Calciumoxid (CaO)."}
+      ]
+    },
+    {
+      id:"zement", title:"Zement (Grundlagen)",
+      body:`<p>Zement ist das wichtigste <b>hydraulische</b> Bindemittel: Er erhärtet durch Reaktion mit Wasser (Hydratation) und ist anschließend wasserbeständig.</p>
+        <h4>Herstellung (Portlandzementklinker)</h4>
+        <p>Rohmehl (Kalkstein + Ton/Mergel) wird bei <b>ca. 1450 °C</b> im Drehrohrofen gebrannt → Sinterung zu Klinker. Klinker wird mit ~5 % Gips (Erstarrungsregler) und ggf. weiteren Stoffen vermahlen.</p>
+        <h4>Hydratation</h4>
+        <p>Die Klinkerphasen reagieren mit Wasser zu <b>CSH-Phasen</b> (Calciumsilikathydrat = Festigkeitsträger) und Calciumhydroxid (Portlandit, hält pH ≈ 12–13 → Korrosionsschutz für Bewehrung).</p>
+        <h4>Wasserzementwert (w/z)</h4>
+        <div class="formula">w/z = Wassermasse / Zementmasse</div>
+        <p>Für vollständige Hydratation theoretisch w/z ≈ 0,40 nötig. Niedriger w/z → höhere Festigkeit & Dichtheit. Überschusswasser → Kapillarporen (schädlich).</p>`,
+      merk:"Zement = hydraulisch (erhärtet mit Wasser, wasserbeständig). Klinker bei 1450 °C. CSH-Phasen = Festigkeit.",
+      klausur:"w/z-Wert ist DAS zentrale Maß: niedriger w/z = höhere Festigkeit & Dauerhaftigkeit. Brenntemperatur 1450 °C merken.",
+      ex:[
+        {type:"calc",q:"Ein Beton enthält 180 kg Wasser und 360 kg Zement je m³. Wie groß ist der w/z-Wert?",
+         a:"0.5", tol:0.01,
+         exp:"w/z = 180/360 = 0,50."},
+        {type:"tf",q:"Ein niedrigerer w/z-Wert führt grundsätzlich zu höherer Festigkeit und Dichtheit des Betons.",a:true,
+         exp:"Richtig – weniger Überschusswasser bedeutet weniger Kapillarporen und damit festeren, dichteren Beton."}
+      ]
+    },
+    {
+      id:"klassifizierung", title:"Bindemittelklassifizierung",
+      body:`<p>Bindemittel werden nach ihrem <b>Erhärtungsverhalten</b> unterschieden:</p>
+        <table>
+          <tr><th>Typ</th><th>Erhärtung</th><th>Wasserbeständig?</th><th>Beispiele</th></tr>
+          <tr><td><b>Nicht hydraulisch</b></td><td>an der Luft (CO₂ / Kristallwasser)</td><td>nein</td><td>Luftkalk, Gips</td></tr>
+          <tr><td><b>Hydraulisch</b></td><td>mit Wasser, auch unter Wasser</td><td>ja</td><td>Zement, hydraul. Kalk</td></tr>
+          <tr><td><b>Latent hydraulisch</b></td><td>nur mit Anreger (z. B. Ca(OH)₂)</td><td>ja</td><td>Hüttensand (Schlacke)</td></tr>
+          <tr><td><b>Puzzolanisch</b></td><td>reagiert mit Ca(OH)₂ + Wasser</td><td>ja</td><td>Flugasche, Trass, Silikastaub</td></tr>
+        </table>
+        <h4>Zusatzstoffe (Typ II)</h4>
+        <ul>
+          <li><b>Latent hydraulisch:</b> hat selbst Bindekraft, braucht aber „Anreger" zum Start.</li>
+          <li><b>Puzzolanisch:</b> hat selbst keine Bindekraft, reagiert nur mit dem Kalkhydrat des Zements.</li>
+        </ul>`,
+      merk:"Nicht hydraulisch (Luft) – hydraulisch (Wasser) – latent hydraulisch (Anreger nötig) – puzzolanisch (braucht Ca(OH)₂).",
+      klausur:"Unterschied latent hydraulisch ↔ puzzolanisch ist beliebt: Hüttensand hat eigene Bindekraft (nur Anreger), Puzzolane nicht.",
+      ex:[
+        {type:"match",q:"Ordne die Bindemittel/Stoffe ihrer Klasse zu:",
+         pairs:[["Luftkalk","nicht hydraulisch"],["Zement","hydraulisch"],["Hüttensand","latent hydraulisch"],["Flugasche","puzzolanisch"]],
+         exp:"Luftkalk nicht hydraulisch, Zement hydraulisch, Hüttensand latent hydraulisch, Flugasche puzzolanisch."}
+      ]
+    },
+    {
+      id:"klinker", title:"Klinkerphasen",
+      body:`<p>Portlandzementklinker besteht aus vier Hauptphasen (Mineralen), die das Erhärtungsverhalten bestimmen:</p>
+        <table>
+          <tr><th>Phase</th><th>Kurz</th><th>Formel</th><th>Eigenschaft</th></tr>
+          <tr><td>Alit (Tricalciumsilikat)</td><td>C₃S</td><td>3CaO·SiO₂</td><td>Hauptfestigkeit, schnell, ~50–65 %</td></tr>
+          <tr><td>Belit (Dicalciumsilikat)</td><td>C₂S</td><td>2CaO·SiO₂</td><td>Spätfestigkeit, langsam, ~15–25 %</td></tr>
+          <tr><td>Aluminat</td><td>C₃A</td><td>3CaO·Al₂O₃</td><td>sehr schnell, Erstarren, wärmend, sulfatempfindlich</td></tr>
+          <tr><td>Aluminatferrit</td><td>C₄AF</td><td>4CaO·Al₂O₃·Fe₂O₃</td><td>dunkle Farbe, geringe Festigkeit</td></tr>
+        </table>
+        <h4>Zementchemische Kurzschreibweise</h4>
+        <p>C=CaO, S=SiO₂, A=Al₂O₃, F=Fe₂O₃, H=H₂O. <b>Alit (C₃S)</b> liefert die frühe Festigkeit, <b>Belit (C₂S)</b> die Nacherhärtung.</p>
+        <p>Hoher C₃A-Gehalt → schnelles Erstarren, hohe Hydratationswärme, geringer Sulfatwiderstand (daher bei HS-Zementen begrenzt).</p>`,
+      merk:"4 Phasen: Alit C₃S (Frühfestigkeit) · Belit C₂S (Spätfestigkeit) · C₃A (schnell+Wärme) · C₄AF (Farbe). Eselsbrücke: C-S-A-F.",
+      klausur:"Alit ↔ Belit nicht verwechseln! Alit = schnell/Frühfestigkeit, Belit = langsam/Spätfestigkeit. C₃A für Sulfatwiderstand begrenzen.",
+      ex:[
+        {type:"mc",q:"Welche Klinkerphase ist hauptverantwortlich für die frühe Festigkeitsentwicklung?",
+         opts:["Belit (C₂S)","Alit (C₃S)","Aluminat (C₃A)","Aluminatferrit (C₄AF)"],a:1,
+         exp:"Alit (C₃S) reagiert schnell und liefert die Frühfestigkeit. Belit ist für die Spätfestigkeit zuständig."},
+        {type:"cloze",q:"In der Zementchemie steht der Buchstabe C für ___ und S für ___.",
+         blanks:["CaO","SiO2"],
+         exp:"C = CaO (Calciumoxid), S = SiO₂ (Siliciumdioxid)."}
+      ]
+    },
+    {
+      id:"cem", title:"CEM-Arten (Zementhauptarten)",
+      body:`<p>Nach DIN EN 197-1 werden fünf Hauptzementarten nach Art und Menge der Hauptbestandteile unterschieden:</p>
+        <table>
+          <tr><th>Bez.</th><th>Name</th><th>Hauptbestandteile</th></tr>
+          <tr><td>CEM I</td><td>Portlandzement</td><td>≥ 95 % Klinker</td></tr>
+          <tr><td>CEM II</td><td>Portlandkompositzement</td><td>Klinker + 1 Zusatz (S, V, LL, …)</td></tr>
+          <tr><td>CEM III</td><td>Hochofenzement</td><td>Klinker + Hüttensand (S)</td></tr>
+          <tr><td>CEM IV</td><td>Puzzolanzement</td><td>Klinker + Puzzolane</td></tr>
+          <tr><td>CEM V</td><td>Kompositzement</td><td>Klinker + Hüttensand + Puzzolane</td></tr>
+        </table>
+        <h4>Kennbuchstaben der Zusatzstoffe</h4>
+        <p>S = Hüttensand, V = Flugasche (kieselsäurereich), D = Silikastaub, LL/L = Kalkstein, P/Q = natürl. Puzzolane, T = gebrannter Schiefer.</p>
+        <h4>Beispiel</h4>
+        <p><b>CEM II/B-S 42,5 R</b>: Portlandhüttenzement, 21–35 % Hüttensand (B), Festigkeitsklasse 42,5, R = hohe Anfangsfestigkeit.</p>
+        <p>Festigkeitsklassen: 32,5 / 42,5 / 52,5 (N = normal, R = rapid/hohe Frühfestigkeit). A/B/C = steigender Anteil Zusatzstoffe.</p>`,
+      merk:"CEM I=Portland, II=Komposit(1 Zusatz), III=Hochofen(Hüttensand), IV=Puzzolan, V=Komposit(mehrere). S=Hüttensand, V=Flugasche.",
+      klausur:"Bezeichnung entschlüsseln können (z. B. CEM III/A 42,5 N). R=Rapid (Frühfestigkeit), Zahl=28-Tage-Druckfestigkeit in N/mm².",
+      ex:[
+        {type:"mc",q:"Was bedeutet die Bezeichnung CEM III?",
+         opts:["Reiner Portlandzement","Hochofenzement (mit Hüttensand)","Puzzolanzement","Kalksteinzement"],a:1,
+         exp:"CEM III ist der Hochofenzement mit hohem Hüttensandanteil (S)."},
+        {type:"tf",q:"Bei der Festigkeitsklasse steht 'R' für eine hohe Anfangs-/Frühfestigkeit (rapid).",a:true,
+         exp:"Richtig – R = rapid (hohe Anfangsfestigkeit), N = normale Anfangsfestigkeit."}
+      ]
+    }
+  ]
+},
+{
+  id:"beton", em:"🧱", title:"Beton",
+  desc:"Frisch-/Festbeton, Nachbehandlung, Expositionsklassen, Dauerhaftigkeit, Betondeckung, Stoffraumrechnung",
+  subs:[
+    {
+      id:"frischbeton", title:"Frischbeton",
+      body:`<p>Frischbeton ist der noch verarbeitbare, nicht erstarrte Beton. Wichtigste Frischbetoneigenschaft: die <b>Konsistenz (Verarbeitbarkeit)</b>.</p>
+        <h4>Konsistenzklassen (Ausbreitmaß / Setzmaß)</h4>
+        <table>
+          <tr><th>Klasse</th><th>Bezeichnung</th><th>Beschreibung</th></tr>
+          <tr><td>F1</td><td>steif</td><td>sehr trocken</td></tr>
+          <tr><td>F2</td><td>plastisch</td><td>—</td></tr>
+          <tr><td>F3</td><td>weich</td><td>häufig verwendet</td></tr>
+          <tr><td>F4</td><td>sehr weich</td><td>—</td></tr>
+          <tr><td>F5/F6</td><td>fließfähig</td><td>Pumpbeton, SVB</td></tr>
+        </table>
+        <h4>Prüfverfahren</h4>
+        <ul>
+          <li><b>Ausbreitmaß</b> (Ausbreittisch) – für weiche/fließfähige Konsistenz.</li>
+          <li><b>Setzmaß</b> (Slump / Setztrichter nach Abrams).</li>
+          <li><b>Verdichtungsmaß</b> (nach Walz) – für steife Konsistenz.</li>
+        </ul>
+        <p>Konsistenz wird v. a. über den <b>Wassergehalt</b> und Fließmittel gesteuert. Zu viel Wasser → Entmischen/Bluten, geringere Festigkeit.</p>`,
+      merk:"Konsistenz F1 (steif) → F6 (fließfähig). Prüfung: Ausbreitmaß, Setzmaß, Verdichtungsmaß. Mehr Wasser = weicher, aber schwächer.",
+      klausur:"Ausbreitmaß vs. Verdichtungsmaß: weiche Konsistenz → Ausbreitmaß; steife → Verdichtungsmaß. Konsistenzklasse F3 ist Standard.",
+      ex:[
+        {type:"mc",q:"Welches Prüfverfahren eignet sich besonders für weichen bis fließfähigen Frischbeton?",
+         opts:["Verdichtungsmaß","Ausbreitmaß","Darrversuch","Glühverlust"],a:1,
+         exp:"Das Ausbreitmaß (Ausbreittisch) wird für weiche bis fließfähige Konsistenzen verwendet; Verdichtungsmaß für steife."},
+        {type:"tf",q:"Die Konsistenzklasse F6 bezeichnet einen sehr steifen Beton.",a:false,
+         exp:"Falsch – F1 ist steif, F6 ist fließfähig. Die Konsistenz nimmt von F1 nach F6 zu (weicher)."}
+      ]
+    },
+    {
+      id:"festbeton", title:"Festbeton",
+      body:`<p>Festbeton ist der erhärtete Beton. Wichtigste Eigenschaft: die <b>Druckfestigkeit</b> (Zugfestigkeit nur ~10 % davon → Bewehrung!).</p>
+        <h4>Druckfestigkeitsklassen</h4>
+        <p>Bezeichnung <b>C f<sub>ck,cyl</sub>/f<sub>ck,cube</sub></b>, z. B. <b>C25/30</b>: charakteristische Festigkeit Zylinder = 25 N/mm², Würfel = 30 N/mm².</p>
+        <ul>
+          <li>Zylinder: Ø150 × 300 mm; Würfel: 150 mm Kante.</li>
+          <li>Prüfalter: 28 Tage; charakteristischer Wert = 5 %-Quantil.</li>
+          <li>Normalbeton z. B. C12/15 … C50/60; darüber hochfester Beton.</li>
+        </ul>
+        <h4>Einflüsse auf die Festigkeit</h4>
+        <ul>
+          <li><b>w/z-Wert</b> (niedriger → fester) – wichtigster Faktor.</li>
+          <li>Zementart/-menge, Verdichtung (Luftporen!), Nachbehandlung, Alter.</li>
+        </ul>`,
+      merk:"C25/30 = Zylinder 25 / Würfel 30 N/mm² nach 28 Tagen. Zugfestigkeit ≈ 10 % der Druckfestigkeit → Bewehrung nötig.",
+      klausur:"Bezeichnung C f_ck,cyl/f_ck,cube sicher entschlüsseln. Erste Zahl = Zylinder, zweite = Würfel. Prüfalter 28 d.",
+      ex:[
+        {type:"mc",q:"Was bedeutet die Festigkeitsklasse C25/30?",
+         opts:["25 N/mm² Würfel, 30 N/mm² Zylinder","25 N/mm² Zylinder, 30 N/mm² Würfel","25 Tage / 30 Tage Prüfalter","25 % Zement, 30 % Wasser"],a:1,
+         exp:"Erste Zahl = Zylinderdruckfestigkeit (25), zweite = Würfeldruckfestigkeit (30), jeweils charakteristisch nach 28 d."},
+        {type:"tf",q:"Die Zugfestigkeit von Beton beträgt nur etwa 10 % seiner Druckfestigkeit.",a:true,
+         exp:"Richtig – deshalb wird Zug über Bewehrung aufgenommen (Stahlbeton)."}
+      ]
+    },
+    {
+      id:"nachbehandlung", title:"Nachbehandlung",
+      body:`<p>Die Nachbehandlung schützt den jungen Beton in der Erhärtungsphase und ist <b>entscheidend für die Dauerhaftigkeit</b> der Randzone.</p>
+        <h4>Ziele</h4>
+        <ul>
+          <li>Schutz vor zu frühem <b>Austrocknen</b> (Hydratation braucht Wasser).</li>
+          <li>Schutz vor <b>Auskühlung/Frost</b> und vor zu großer Erwärmung.</li>
+          <li>Schutz vor Erschütterung, Regen (Auswaschen), schädlichen Stoffen.</li>
+        </ul>
+        <h4>Maßnahmen</h4>
+        <ul>
+          <li>Feucht halten (Besprühen, Wasserstau, feuchte Tücher), Folien abdecken.</li>
+          <li>In Schalung belassen, Nachbehandlungsmittel (Curing Compound) aufsprühen.</li>
+          <li>Wärmedämmende Abdeckung bei Kälte.</li>
+        </ul>
+        <h4>Folgen mangelnder Nachbehandlung</h4>
+        <p>Schwindrisse, poröse/sandende Oberfläche, geringere Festigkeit der Randzone, schnellere Carbonatisierung → Bewehrungskorrosion. Die <b>Mindestdauer</b> richtet sich nach Festigkeitsentwicklung und Expositionsklasse.</p>`,
+      merk:"Nachbehandlung = jungen Beton feucht & temperiert halten. Wichtig v. a. für die dauerhafte Betonrandzone (Carbonatisierung!).",
+      klausur:"Beliebte Frage: Warum nachbehandeln? → Hydratation sichern, Schwindrisse & frühes Austrocknen vermeiden, dichte Randzone.",
+      ex:[
+        {type:"mc",q:"Welches ist KEIN Ziel der Nachbehandlung?",
+         opts:["Schutz vor frühem Austrocknen","Schutz vor Frost","Beschleunigung durch schnelles Trocknen","Sicherung einer dichten Randzone"],a:2,
+         exp:"Schnelles Austrocknen ist schädlich! Die Hydratation benötigt Wasser; frühe Trocknung führt zu Rissen und poröser Randzone."},
+        {type:"tf",q:"Mangelnde Nachbehandlung beschleunigt die Carbonatisierung und damit das Korrosionsrisiko der Bewehrung.",a:true,
+         exp:"Richtig – eine poröse, schlecht nachbehandelte Randzone carbonatisiert schneller."}
+      ]
+    },
+    {
+      id:"exposition", title:"Expositionsklassen",
+      body:`<p>Expositionsklassen beschreiben die <b>Umwelteinwirkungen</b> auf den Beton (Angriffsart) und steuern Mindestanforderungen (w/z, Zementgehalt, Festigkeit, Betondeckung).</p>
+        <table>
+          <tr><th>Klasse</th><th>Angriff</th><th>Beispiel</th></tr>
+          <tr><td>X0</td><td>kein Angriff</td><td>Innenbauteil ohne Bewehrung, trocken</td></tr>
+          <tr><td>XC1–XC4</td><td>Carbonatisierung (Korrosion)</td><td>XC1 trocken, XC4 wechselnd nass/trocken</td></tr>
+          <tr><td>XD1–XD3</td><td>Chloride (nicht Meerwasser)</td><td>Tausalz, Parkdecks</td></tr>
+          <tr><td>XS1–XS3</td><td>Chloride aus Meerwasser</td><td>Küstenbauwerke</td></tr>
+          <tr><td>XF1–XF4</td><td>Frost (± Taumittel)</td><td>Außenbauteile, Fahrbahnen</td></tr>
+          <tr><td>XA1–XA3</td><td>chemischer Angriff</td><td>aggressive Böden/Wässer</td></tr>
+          <tr><td>XM1–XM3</td><td>Verschleiß (mechanisch)</td><td>Industrieböden</td></tr>
+        </table>
+        <p>Höhere Zahl = stärkerer Angriff = strengere Anforderungen (niedrigerer max. w/z, höherer Mindestzementgehalt, höhere Mindestfestigkeit).</p>`,
+      merk:"X + Buchstabe(n): C=Carbonatisierung, D=Chlorid (Tausalz), S=Salz/Meerwasser, F=Frost, A=chem. Angriff, M=mechan. Verschleiß.",
+      klausur:"Buchstaben-Codes sicher zuordnen! XC = Carbonatisierung, XF = Frost, XD = Chlorid (Tausalz), XS = Seewasser. Höhere Zahl = strenger.",
+      ex:[
+        {type:"match",q:"Ordne die Expositionsklasse der Angriffsart zu:",
+         pairs:[["XC","Carbonatisierung"],["XD","Chlorid (Tausalz)"],["XS","Meerwasser (Chlorid)"],["XF","Frost / Frost-Tausalz"]],
+         exp:"XC=Carbonatisierung, XD=Chlorid (kein Meerwasser), XS=Meerwasser, XF=Frost."},
+        {type:"mc",q:"Welche Expositionsklasse beschreibt einen Frostangriff mit Taumitteln?",
+         opts:["XC4","XD2","XF4","XA1"],a:2,
+         exp:"XF steht für Frostangriff; XF4 ist hohe Frost-Tausalz-Beanspruchung."}
+      ]
+    },
+    {
+      id:"dauerhaftigkeit", title:"Dauerhaftigkeit",
+      body:`<p>Dauerhaftigkeit ist die Fähigkeit des Betons, den vorgesehenen Anforderungen über die geplante Nutzungsdauer ohne wesentlichen Funktionsverlust standzuhalten. Hauptgefahr: <b>Bewehrungskorrosion</b>.</p>
+        <h4>Carbonatisierung</h4>
+        <p>CO₂ dringt in den Beton und senkt den pH-Wert der Randzone: Ca(OH)₂ + CO₂ → CaCO₃ + H₂O. Sinkt der pH unter ~9, geht der <b>Passivierungsschutz</b> des Stahls verloren → Korrosion (Volumenzunahme → Abplatzungen).</p>
+        <div class="formula">x<sub>c</sub> = K · √t &nbsp;(Carbonatisierungstiefe ∝ √Zeit)</div>
+        <h4>Chloridangriff</h4>
+        <p>Chloride (Tausalz, Meerwasser) zerstören die Passivschicht lokal → Lochfraßkorrosion, auch bei hohem pH.</p>
+        <h4>Weitere Mechanismen</h4>
+        <ul>
+          <li>Frost-/Frost-Tausalz-Angriff (Sprengdruck durch Eisbildung), AKR, Sulfatangriff (Ettringit-Treiben).</li>
+        </ul>
+        <h4>Schutz</h4>
+        <p>Dichter Beton (niedriger w/z), ausreichende <b>Betondeckung</b>, gute Nachbehandlung, geeignete Zementart, Luftporenbildner gegen Frost.</p>`,
+      merk:"Carbonatisierung senkt pH → Stahl entpassiviert → Korrosion. Schutz: dichter Beton + Betondeckung + Nachbehandlung.",
+      klausur:"Carbonatisierungstiefe ∝ √t (Wurzel-Zeit-Gesetz). Unterschied Carbonatisierung (Fläche) ↔ Chlorid (Lochfraß) kennen.",
+      ex:[
+        {type:"cloze",q:"Die Carbonatisierung senkt den ___-Wert der Betonrandzone; dadurch verliert der Bewehrungsstahl seinen ___-schutz.",
+         blanks:["pH","Passivierungs"],
+         exp:"Sinkender pH-Wert hebt die Passivierung (Passivschicht) des Stahls auf → Korrosion."},
+        {type:"calc",q:"Die Carbonatisierungstiefe folgt x = K·√t mit K = 4 mm/√Jahr. Welche Tiefe (mm) ist nach 25 Jahren erreicht?",
+         a:"20", tol:0.5, unit:"mm",
+         exp:"x = 4·√25 = 4·5 = 20 mm."}
+      ]
+    },
+    {
+      id:"betondeckung", title:"Betondeckung",
+      body:`<p>Die Betondeckung c ist der Abstand zwischen Bewehrungsoberfläche und Betonoberfläche. Sie schützt den Stahl vor <b>Korrosion</b> (Carbonatisierung/Chloride), sichert den <b>Verbund</b> und den <b>Brandschutz</b>.</p>
+        <div class="formula">c<sub>nom</sub> = c<sub>min</sub> + Δc<sub>dev</sub></div>
+        <ul>
+          <li><b>c<sub>min</sub></b>: Mindestbetondeckung (größerer Wert aus Verbund c<sub>min,b</sub> und Dauerhaftigkeit c<sub>min,dur</sub>).</li>
+          <li><b>Δc<sub>dev</sub></b>: Vorhaltemaß (Toleranz), meist 10 mm (kann bei Qualitätssicherung reduziert werden).</li>
+          <li><b>c<sub>nom</sub></b>: Nennmaß = Wert für die Planung/Abstandhalter.</li>
+        </ul>
+        <p>Die Mindestdeckung hängt von der <b>Expositionsklasse</b> ab: aggressivere Umgebung (z. B. XS3) → größere Deckung. c<sub>min,b</sub> ≥ Stabdurchmesser (Verbund).</p>`,
+      merk:"c_nom = c_min + Δc_dev (Vorhaltemaß ≈ 10 mm). c_min = max(Verbund, Dauerhaftigkeit). Strengere Expositionsklasse → mehr Deckung.",
+      klausur:"Formel c_nom = c_min + Δc_dev auswendig! Rechenaufgabe: Nennmaß aus c_min und Vorhaltemaß bestimmen.",
+      ex:[
+        {type:"calc",q:"Die Mindestbetondeckung beträgt c_min = 25 mm, das Vorhaltemaß Δc_dev = 10 mm. Wie groß ist das Nennmaß c_nom in mm?",
+         a:"35", tol:0.5, unit:"mm",
+         exp:"c_nom = c_min + Δc_dev = 25 + 10 = 35 mm."},
+        {type:"mc",q:"Welche Funktion hat die Betondeckung NICHT primär?",
+         opts:["Korrosionsschutz der Bewehrung","Sicherstellung des Verbunds","Brandschutz","Erhöhung des E-Moduls des Betons"],a:3,
+         exp:"Die Betondeckung dient Korrosionsschutz, Verbund und Brandschutz – nicht der Erhöhung des E-Moduls."}
+      ]
+    },
+    {
+      id:"stoffraum", title:"Stoffraumrechnung",
+      body:`<p>Die Stoffraumrechnung ermittelt die Zusammensetzung von 1 m³ Beton. Grundgedanke: Die Summe der <b>Volumina aller Bestandteile</b> ergibt 1 m³ (1000 L).</p>
+        <div class="formula">V<sub>Zement</sub> + V<sub>Wasser</sub> + V<sub>Gesteinskörnung</sub> + V<sub>Luft</sub> = 1000 L</div>
+        <p>Volumen jedes Stoffs = Masse / Reindichte. Typische Reindichten: Zement ≈ 3,1 kg/L; Wasser = 1,0 kg/L; Gesteinskörnung ≈ 2,65 kg/L.</p>
+        <h4>Vorgehen</h4>
+        <ol>
+          <li>w/z-Wert und Zementgehalt z festlegen → Wassergehalt w = (w/z)·z.</li>
+          <li>Volumina von Zement, Wasser, Luftporen berechnen.</li>
+          <li>Restvolumen = Volumen der Gesteinskörnung → Masse = V·ρ.</li>
+        </ol>
+        <h4>Beispiel</h4>
+        <p>z = 320 kg → V<sub>z</sub> = 320/3,1 ≈ 103 L. w = 160 kg → V<sub>w</sub> = 160 L. Luft 20 L. <br>V<sub>GK</sub> = 1000 − 103 − 160 − 20 = 717 L → m<sub>GK</sub> = 717·2,65 ≈ 1900 kg.</p>`,
+      merk:"Stoffraumrechnung: ΣVolumina = 1000 L. V = m/ρ. Restvolumen = Gesteinskörnung. Luftporen nicht vergessen!",
+      klausur:"DER Beton-Rechenklassiker. Schrittweise: Wasser aus w/z, Volumina (m/ρ), Rest = GK. Reindichten der Stoffe kennen.",
+      ex:[
+        {type:"calc",q:"Zement z = 310 kg/m³ mit Reindichte 3,1 kg/L. Welches Volumen (in Litern) nimmt der Zement ein?",
+         a:"100", tol:1, unit:"L",
+         exp:"V = m/ρ = 310 / 3,1 = 100 L."},
+        {type:"calc",q:"Volumen 1000 L: Zement 100 L, Wasser 165 L, Luft 15 L. Wie groß ist das Volumen der Gesteinskörnung (L)?",
+         a:"720", tol:2, unit:"L",
+         exp:"V_GK = 1000 − 100 − 165 − 15 = 720 L."}
+      ]
+    }
+  ]
+},
+{
+  id:"holz", em:"🌲", title:"Holz und Holzwerkstoffe",
+  desc:"Holzaufbau, Anisotropie, Holzfeuchte, Holzwerkstoffe",
+  subs:[
+    {
+      id:"aufbau", title:"Holzaufbau",
+      body:`<p>Holz ist ein natürlich gewachsener, organischer Baustoff. Sein Aufbau ist zellulär und richtungsabhängig.</p>
+        <h4>Makroskopischer Aufbau (Stammquerschnitt, von außen nach innen)</h4>
+        <ul>
+          <li><b>Borke/Rinde:</b> Schutzschicht.</li>
+          <li><b>Bast & Kambium:</b> Wachstumsschicht (bildet Zellen).</li>
+          <li><b>Splintholz:</b> jung, wasserleitend, hell.</li>
+          <li><b>Kernholz:</b> alt, eingelagert, oft dunkler, dauerhafter.</li>
+          <li><b>Mark:</b> Zentrum.</li>
+        </ul>
+        <h4>Jahresringe</h4>
+        <p>Pro Jahr ein Ring: helles, weiches <b>Frühholz</b> (große Zellen, Frühjahr) und dunkles, dichtes <b>Spätholz</b> (kleine Zellen, Sommer). Hoher Spätholzanteil → höhere Festigkeit/Rohdichte.</p>
+        <h4>Chemische Bestandteile</h4>
+        <p>Cellulose (~50 %, Festigkeit), Hemicellulose, Lignin (~20–30 %, Verholzung/Druckfestigkeit). Nadelholz (Fichte, Kiefer) vs. Laubholz (Buche, Eiche).</p>`,
+      merk:"Von außen nach innen: Rinde–Bast–Kambium–Splint–Kern–Mark. Jahresring = Frühholz (hell/weich) + Spätholz (dunkel/dicht).",
+      klausur:"Splint (jung, leitend) ↔ Kern (alt, dauerhaft) unterscheiden. Spätholzanteil bestimmt Festigkeit. Cellulose = Festigkeit, Lignin = Verholzung.",
+      ex:[
+        {type:"mc",q:"Welcher Holzbestandteil ist hauptverantwortlich für die Zugfestigkeit?",
+         opts:["Lignin","Cellulose","Harz","Wasser"],a:1,
+         exp:"Cellulose bildet die festen Fasern und liefert v. a. die Zugfestigkeit; Lignin sorgt für die Verholzung/Druckaufnahme."},
+        {type:"tf",q:"Spätholz ist dichter und fester als Frühholz.",a:true,
+         exp:"Richtig – Spätholz hat kleinere, dickwandigere Zellen und damit höhere Dichte und Festigkeit."}
+      ]
+    },
+    {
+      id:"holz-anisotropie", title:"Anisotropie (Holz)",
+      body:`<p>Holz ist ausgeprägt <b>anisotrop (orthotrop)</b>: Eigenschaften unterscheiden sich in drei Hauptrichtungen, bedingt durch die längs orientierten Zellen (Fasern).</p>
+        <h4>Drei Hauptrichtungen</h4>
+        <ul>
+          <li><b>Längs / axial (∥ Faser):</b> höchste Festigkeit & E-Modul.</li>
+          <li><b>Radial (⊥, zum Mark):</b> mittlere Werte.</li>
+          <li><b>Tangential (⊥, zum Ring):</b> geringste Werte, größtes Schwinden.</li>
+        </ul>
+        <h4>Festigkeit</h4>
+        <p>Zug- und Druckfestigkeit <b>parallel zur Faser</b> sind ein Vielfaches der Werte <b>quer zur Faser</b> (Faktor ~10–30). Daher Belastung möglichst in Faserrichtung.</p>
+        <h4>Quellen & Schwinden</h4>
+        <p>Auch das Quell-/Schwindmaß ist richtungsabhängig: <b>tangential > radial ≫ längs</b> (längs vernachlässigbar). Verhältnis grob tangential:radial:längs ≈ 10:5:1.</p>`,
+      merk:"3 Richtungen: längs (max. Festigkeit) > radial > tangential. Schwinden umgekehrt: tangential > radial ≫ längs (≈10:5:1).",
+      klausur:"Festigkeit ∥ Faser ≫ ⊥ Faser. Schwindmaß: tangential am größten, längs vernachlässigbar. Häufige Zuordnungs-/W-F-Frage.",
+      ex:[
+        {type:"mc",q:"In welcher Richtung schwindet/quillt Holz am stärksten?",
+         opts:["Längs (parallel zur Faser)","Radial","Tangential","In allen Richtungen gleich"],a:2,
+         exp:"Das Schwinden ist tangential am größten, radial mittel und längs nahezu vernachlässigbar."},
+        {type:"tf",q:"Die Festigkeit von Holz ist quer zur Faser höher als parallel zur Faser.",a:false,
+         exp:"Falsch – parallel zur Faser ist die Festigkeit ein Vielfaches der Querfestigkeit."}
+      ]
+    },
+    {
+      id:"holzfeuchte", title:"Holzfeuchte",
+      body:`<p>Die Holzfeuchte u ist das Verhältnis der Wassermasse zur Masse des absolut trockenen (darrtrockenen) Holzes.</p>
+        <div class="formula">u = (m<sub>feucht</sub> − m<sub>darr</sub>) / m<sub>darr</sub> · 100 %</div>
+        <h4>Fasersättigungsbereich (FSB)</h4>
+        <p>Bei ca. <b>u ≈ 28–30 %</b> liegt der Fasersättigungspunkt: Zellwände sind gesättigt, Zellhohlräume noch leer.</p>
+        <ul>
+          <li><b>Unter FSB (u < 30 %):</b> Wasseraufnahme/-abgabe in den Zellwänden → <b>Quellen & Schwinden</b>, Festigkeit ändert sich.</li>
+          <li><b>Über FSB (u > 30 %):</b> freies Wasser in Hohlräumen → KEIN weiteres Quellen, Festigkeit ~konstant.</li>
+        </ul>
+        <h4>Festigkeit & Feuchte</h4>
+        <p>Mit steigender Feuchte (bis FSB) <b>sinkt die Festigkeit</b>. Gleichgewichtsfeuchte stellt sich je nach Klima ein (Innenraum ~9–12 %).</p>`,
+      merk:"u = (m_feucht − m_darr)/m_darr. Fasersättigung ≈ 30 %. Schwinden/Quellen NUR unter FSB. Mehr Feuchte → weniger Festigkeit.",
+      klausur:"Darr-Rechenaufgabe (u aus Massen). Fasersättigungspunkt ~30 % auswendig. Über FSB: kein Quellen mehr!",
+      ex:[
+        {type:"calc",q:"Eine Holzprobe wiegt feucht 240 g und nach dem Darren 200 g. Wie groß ist die Holzfeuchte u in %?",
+         a:"20", tol:0.5, unit:"%",
+         exp:"u = (240−200)/200·100 = 40/200·100 = 20 %."},
+        {type:"tf",q:"Oberhalb des Fasersättigungspunktes (u > 30 %) quillt das Holz bei weiterer Wasseraufnahme nicht mehr.",a:true,
+         exp:"Richtig – zusätzliches Wasser füllt nur die Zellhohlräume (freies Wasser), die Zellwände sind bereits gesättigt."}
+      ]
+    },
+    {
+      id:"holzwerkstoffe", title:"Holzwerkstoffe",
+      body:`<p>Holzwerkstoffe entstehen durch Zerlegen des Holzes und Wiederverleimen → gleichmäßigere Eigenschaften, größere Formate, reduzierte Anisotropie.</p>
+        <table>
+          <tr><th>Werkstoff</th><th>Aufbau</th><th>Beispiel/Einsatz</th></tr>
+          <tr><td><b>Sperrholz</b></td><td>kreuzweise verleimte Furniere</td><td>Schalung, Möbel</td></tr>
+          <tr><td><b>Furnierschichtholz (Furnierlagenholz, LVL)</b></td><td>Furniere faserparallel</td><td>tragende Träger</td></tr>
+          <tr><td><b>Brettschichtholz (BSH/Leimbinder)</b></td><td>faserparallel verleimte Bretter (Lamellen)</td><td>große Spannweiten, Hallen</td></tr>
+          <tr><td><b>Brettsperrholz (BSP/CLT)</b></td><td>kreuzweise verleimte Brettlagen</td><td>flächige Bauteile, Wände/Decken</td></tr>
+          <tr><td><b>Spanplatte (OSB)</b></td><td>verleimte Späne/Strands</td><td>Beplankung, Aussteifung</td></tr>
+          <tr><td><b>Faserplatte (MDF/HDF)</b></td><td>verleimte Holzfasern</td><td>Möbel, Innenausbau</td></tr>
+        </table>
+        <h4>Vorteile</h4>
+        <ul>
+          <li>Geringere Streuung & Anisotropie als Vollholz, Ausnutzung minderwertigen Holzes.</li>
+          <li>Große Bauteile (z. B. BSH-Träger), maßhaltig. Eigenschaften über Leim & Lagenaufbau steuerbar.</li>
+        </ul>`,
+      merk:"BSH = Lamellen faserparallel (Träger); BSP/CLT = Lagen kreuzweise (Flächen); Sperrholz = Furniere kreuzweise; OSB = Späne.",
+      klausur:"Unterscheidung faserparallel (BSH, LVL) ↔ kreuzweise (Sperrholz, BSP/CLT) ist beliebt. Kreuzweise reduziert Anisotropie/Quellen.",
+      ex:[
+        {type:"match",q:"Ordne den Holzwerkstoff seinem Aufbau zu:",
+         pairs:[["Brettschichtholz (BSH)","Lamellen faserparallel verleimt"],["Brettsperrholz (CLT)","Brettlagen kreuzweise verleimt"],["Sperrholz","Furniere kreuzweise verleimt"],["OSB","verleimte Späne/Strands"]],
+         exp:"BSH=faserparallel, CLT & Sperrholz=kreuzweise (Bretter bzw. Furniere), OSB=Späne."},
+        {type:"tf",q:"Durch kreuzweises Verleimen (z. B. Brettsperrholz) wird die Anisotropie des Holzes verringert.",a:true,
+         exp:"Richtig – kreuzweiser Aufbau gleicht die Richtungsunterschiede in Festigkeit und Quellverhalten aus."}
+      ]
+    }
+  ]
+}
+];
+
+/* ===================================================================
+   STATE & PERSISTENZ
+   =================================================================== */
+const PW = "BSK!2026!";
+const LS = {read:"bsk_read", fav:"bsk_fav", theme:"bsk_theme"};
+let readSet = new Set(JSON.parse(localStorage.getItem(LS.read)||"[]"));
+let favSet  = new Set(JSON.parse(localStorage.getItem(LS.fav)||"[]"));
+function save(){localStorage.setItem(LS.read,JSON.stringify([...readSet]));
+  localStorage.setItem(LS.fav,JSON.stringify([...favSet]));}
+
+const ALL_SUBS=[]; DATA.forEach(t=>t.subs.forEach(s=>ALL_SUBS.push({...s,topic:t.title,topicId:t.id,em:t.em})));
+const TOTAL=ALL_SUBS.length;
+
+/* ===================================================================
+   LOGIN
+   =================================================================== */
+function checkPw(){
+  const v=document.getElementById("pw").value;
+  if(v===PW){
+    sessionStorage.setItem("bsk_auth","1");
+    document.getElementById("login").style.display="none";
+    document.getElementById("app").style.display="block";
+    initApp();
+  }else{
+    document.getElementById("loginErr").textContent="Falsches Passwort. Bitte erneut versuchen.";
+    document.getElementById("pw").value="";
+  }
+}
+document.getElementById("pw").addEventListener("keydown",e=>{if(e.key==="Enter")checkPw();});
+if(sessionStorage.getItem("bsk_auth")==="1"){
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
+}
+
+/* ===================================================================
+   THEME
+   =================================================================== */
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  document.getElementById("themeBtn").textContent = t==="dark"?"☀️":"🌙";
+  localStorage.setItem(LS.theme,t);
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";
+  applyTheme(cur);
+}
+applyTheme(localStorage.getItem(LS.theme)||"light");
+
+/* ===================================================================
+   NAVIGATION / SIDEBAR
+   =================================================================== */
+function buildNav(){
+  const nt=document.getElementById("navTopics"); nt.innerHTML="";
+  DATA.forEach(t=>{
+    const head=document.createElement("div");
+    head.className="nav-item"; head.innerHTML=`<span class="em">${t.em}</span> ${t.title}`;
+    head.onclick=()=>showTopic(t.id);
+    nt.appendChild(head);
+    const sub=document.createElement("div"); sub.className="nav-sub";
+    t.subs.forEach(s=>{
+      const it=document.createElement("div"); it.className="nav-item";
+      it.textContent=s.title; it.onclick=()=>showTopic(t.id,s.id);
+      sub.appendChild(it);
+    });
+    nt.appendChild(sub);
+  });
+}
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("show");
+  document.getElementById("backdrop").classList.toggle("show");
+}
+function closeSidebar(){
+  document.getElementById("sidebar").classList.remove("show");
+  document.getElementById("backdrop").classList.remove("show");
+}
+
+/* ===================================================================
+   PROGRESS
+   =================================================================== */
+function updateProgress(){
+  const pct=TOTAL?Math.round(readSet.size/TOTAL*100):0;
+  document.getElementById("progBar").style.width=pct+"%";
+  document.getElementById("progPct").textContent=pct+"%";
+  document.getElementById("progTxt").textContent=`${readSet.size} von ${TOTAL} Themen gelesen`;
+}
+
+/* ===================================================================
+   RENDER: DASHBOARD
+   =================================================================== */
+function showDash(){
+  closeSidebar();
+  const c=document.getElementById("content");
+  let cards=DATA.map(t=>`<div class="tcard" onclick="showTopic('${t.id}')">
+      <div class="em">${t.em}</div><h3>${t.title}</h3>
+      <p>${t.desc}</p><div style="margin-top:8px"><span class="tag">${t.subs.length} Unterthemen</span></div></div>`).join("");
+  const exCount=ALL_SUBS.reduce((n,s)=>n+s.ex.length,0);
+  c.innerHTML=`
+    <div class="hero">
+      <h1>Willkommen zur Baustoffkunde-Lernhilfe 🏗️</h1>
+      <p>Deine digitale Wissensdatenbank für die Klausurvorbereitung im Bauingenieurwesen. Arbeite die Themen durch, übe mit Aufgaben und teste dich im Quizmodus.</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat"><div class="n">${DATA.length}</div><div class="t">Themenbereiche</div></div>
+      <div class="stat"><div class="n">${TOTAL}</div><div class="t">Unterthemen</div></div>
+      <div class="stat"><div class="n">${exCount}</div><div class="t">Übungsaufgaben</div></div>
+      <div class="stat"><div class="n">${favSet.size}</div><div class="t">Favoriten</div></div>
+    </div>
+    <div class="section-head"><span class="em">📚</span><h2>Themenbereiche</h2></div>
+    <div class="cards">${cards}</div>`;
+  updateProgress();
+  setActiveNav("Startseite");
+}
+
+/* ===================================================================
+   RENDER: TOPIC + ACCORDION
+   =================================================================== */
+function exHtml(s, ex, idx){
+  const id=`${s.id}_${idx}`;
+  const tagMap={mc:"Multiple Choice",tf:"Wahr / Falsch",match:"Zuordnung",cloze:"Lückentext",calc:"Rechenaufgabe"};
+  let inner="";
+  if(ex.type==="mc"){
+    inner=ex.opts.map((o,i)=>`<button class="opt" onclick="answerMC('${id}',${i},${ex.a})">${o}</button>`).join("");
+  }else if(ex.type==="tf"){
+    inner=`<button class="opt" onclick="answerTF('${id}',true,${ex.a})">✔ Wahr</button>
+           <button class="opt" onclick="answerTF('${id}',false,${ex.a})">✘ Falsch</button>`;
+  }else if(ex.type==="cloze"){
+    let n=0; const q=ex.q.replace(/___/g,()=>`<input class="cloze-inp" id="${id}_b${n++}" autocomplete="off">`);
+    return `<div class="ex"><span class="extag">${tagMap[ex.type]}</span>
+      <div class="q">${q}</div>
+      <button class="ex-btn" onclick='checkCloze("${id}",${JSON.stringify(ex.blanks)})'>Prüfen</button>
+      <div class="ex-feedback" id="${id}_fb"></div></div>`;
+  }else if(ex.type==="calc"){
+    return `<div class="ex"><span class="extag">${tagMap[ex.type]}</span>
+      <div class="q">${ex.q}</div>
+      <input class="cloze-inp" id="${id}_in" autocomplete="off" placeholder="Ergebnis…" style="min-width:140px">
+      ${ex.unit?`<span style="margin-left:6px;color:var(--text-2)">${ex.unit}</span>`:""}
+      <div style="margin-top:10px"><button class="ex-btn" onclick='checkCalc("${id}","${ex.a}",${ex.tol})'>Prüfen</button></div>
+      <div class="ex-feedback" id="${id}_fb"></div></div>`;
+  }else if(ex.type==="match"){
+    // shuffle right column
+    const lefts=ex.pairs.map(p=>p[0]);
+    const rights=ex.pairs.map(p=>p[1]);
+    const shuf=[...rights].sort(()=>Math.random()-0.5);
+    MATCH_STATE[id]={pairs:ex.pairs,sel:null,done:0,total:ex.pairs.length};
+    const L=lefts.map((l,i)=>`<div class="mitem" id="${id}_L${i}" onclick="matchPick('${id}','L',${i})">${l}</div>`).join("");
+    const R=shuf.map((r)=>{const oi=rights.indexOf(r);return `<div class="mitem" id="${id}_R${oi}" onclick="matchPick('${id}','R',${oi})">${r}</div>`;}).join("");
+    return `<div class="ex"><span class="extag">${tagMap[ex.type]}</span>
+      <div class="q">${ex.q}</div>
+      <div class="match-grid"><div class="match-col"><h5>Begriff</h5>${L}</div>
+      <div class="match-col"><h5>Zuordnung</h5>${R}</div></div>
+      <div class="ex-feedback" id="${id}_fb"></div></div>`;
+  }
+  return `<div class="ex"><span class="extag">${tagMap[ex.type]}</span>
+    <div class="q">${ex.q}</div>${inner}
+    <div class="ex-feedback" id="${id}_fb"></div></div>`;
+}
+
+function subHtml(s){
+  const isFav=favSet.has(s.id), isRead=readSet.has(s.id);
+  const exs=s.ex.map((e,i)=>exHtml(s,e,i)).join("");
+  return `<div class="acc" id="acc_${s.id}">
+    <div class="acc-head" onclick="toggleAcc('${s.id}')">
+      <span class="chev">▶</span>
+      <span class="title">${s.title} ${isRead?'<span style="color:var(--green)">✓</span>':''}</span>
+      <button class="fav ${isFav?'on':''}" id="fav_${s.id}" onclick="event.stopPropagation();toggleFav('${s.id}')" title="Favorit">★</button>
+    </div>
+    <div class="acc-body"><div class="acc-inner">
+      ${s.body}
+      <div class="callout merk"><b>💡 Merksatz</b>${s.merk}</div>
+      <div class="callout klausur"><b>📝 Klausurhinweis</b>${s.klausur}</div>
+      <h4>Übungsaufgabe(n)</h4>
+      ${exs}
+    </div></div>
+  </div>`;
+}
+
+function showTopic(topicId, openSub){
+  closeSidebar();
+  const t=DATA.find(x=>x.id===topicId);
+  const c=document.getElementById("content");
+  c.innerHTML=`<div class="section-head"><span class="em">${t.em}</span><h2>${t.title}</h2></div>
+    <p style="color:var(--text-2);margin-bottom:18px">${t.desc}</p>
+    ${t.subs.map(subHtml).join("")}`;
+  setActiveNav(t.title);
+  window.scrollTo(0,0);
+  if(openSub){ setTimeout(()=>{toggleAcc(openSub); const el=document.getElementById("acc_"+openSub); if(el)el.scrollIntoView({behavior:"smooth",block:"center"});},80); }
+}
+
+function toggleAcc(subId){
+  const el=document.getElementById("acc_"+subId);
+  el.classList.toggle("open");
+  if(el.classList.contains("open") && !readSet.has(subId)){
+    readSet.add(subId); save(); updateProgress();
+    // update check mark + active nav refresh on next render
+    const titleEl=el.querySelector(".title");
+    if(!titleEl.innerHTML.includes("✓")) titleEl.innerHTML+=' <span style="color:var(--green)">✓</span>';
+  }
+}
+
+/* ===================================================================
+   FAVORITEN
+   =================================================================== */
+function toggleFav(subId){
+  if(favSet.has(subId))favSet.delete(subId); else favSet.add(subId);
+  save();
+  const b=document.getElementById("fav_"+subId);
+  if(b)b.classList.toggle("on",favSet.has(subId));
+}
+function goFav(){
+  closeSidebar();
+  const c=document.getElementById("content");
+  const favs=ALL_SUBS.filter(s=>favSet.has(s.id));
+  setActiveNav("Favoriten");
+  if(favs.length===0){
+    c.innerHTML=`<div class="section-head"><span class="em">⭐</span><h2>Favoriten</h2></div>
+      <div class="empty"><span class="em">⭐</span>Noch keine Favoriten markiert.<br>
+      Klicke bei einem Thema auf den Stern ★, um es hier zu sammeln.</div>`;
+    return;
+  }
+  c.innerHTML=`<div class="section-head"><span class="em">⭐</span><h2>Favoriten (${favs.length})</h2></div>
+    ${favs.map(subHtml).join("")}`;
+  window.scrollTo(0,0);
+}
+
+/* ===================================================================
+   SUCHE
+   =================================================================== */
+function stripTags(h){return h.replace(/<[^>]*>/g," ");}
+function doSearch(q){
+  const box=document.getElementById("searchRes");
+  q=q.trim().toLowerCase();
+  if(!q){box.style.display="none";return;}
+  const res=[];
+  ALL_SUBS.forEach(s=>{
+    const hay=(s.title+" "+s.topic+" "+stripTags(s.body)+" "+s.merk+" "+s.klausur).toLowerCase();
+    if(hay.includes(q)){
+      let snip="";
+      const plain=stripTags(s.body);
+      const pos=plain.toLowerCase().indexOf(q);
+      if(pos>=0){snip="…"+plain.substring(Math.max(0,pos-30),pos+50).trim()+"…";}
+      res.push({s,snip});
+    }
+  });
+  if(res.length===0){box.innerHTML=`<div class="none">Keine Treffer für „${q}"</div>`;box.style.display="block";return;}
+  box.innerHTML=res.slice(0,12).map(r=>{
+    const re=new RegExp("("+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig");
+    const title=r.s.title.replace(re,"<b>$1</b>");
+    return `<div class="item" onclick="openFromSearch('${r.s.topicId}','${r.s.id}')">
+      <span>${r.s.em} ${title}</span><small>${r.s.topic}${r.snip?" · "+r.snip:""}</small></div>`;
+  }).join("");
+  box.style.display="block";
+}
+function openFromSearch(topicId,subId){
+  document.getElementById("search").value="";
+  document.getElementById("searchRes").style.display="none";
+  showTopic(topicId,subId);
+}
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".search-wrap"))document.getElementById("searchRes").style.display="none";
+});
+
+/* ===================================================================
+   ANTWORT-LOGIK (Übungen)
+   =================================================================== */
+function fb(id,ok,msg){
+  const f=document.getElementById(id+"_fb");
+  f.className="ex-feedback "+(ok?"ok":"no");
+  f.innerHTML=(ok?"✅ Richtig! ":"❌ Nicht ganz. ")+msg;
+}
+function findEx(id){
+  const us=id.lastIndexOf("_"); const subId=id.substring(0,us); const idx=+id.substring(us+1);
+  const s=ALL_SUBS.find(x=>x.id===subId); return s?s.ex[idx]:null;
+}
+function answerMC(id,chosen,correct){
+  const ex=findEx(id);
+  const opts=document.querySelectorAll("#acc_"+id.substring(0,id.lastIndexOf("_"))+" .opt, .ex .opt");
+  // disable within this exercise
+  const exEl=document.getElementById(id+"_fb").closest(".ex");
+  exEl.querySelectorAll(".opt").forEach((o,i)=>{
+    o.disabled=true;
+    if(i===correct)o.classList.add("correct");
+    if(i===chosen&&chosen!==correct)o.classList.add("wrong");
+  });
+  fb(id,chosen===correct,ex.exp);
+}
+function answerTF(id,chosen,correct){
+  const ex=findEx(id);
+  const exEl=document.getElementById(id+"_fb").closest(".ex");
+  const btns=exEl.querySelectorAll(".opt");
+  btns.forEach(b=>b.disabled=true);
+  // btn0 = Wahr(true), btn1 = Falsch(false)
+  btns[correct?0:1].classList.add("correct");
+  if(chosen!==correct)btns[chosen?0:1].classList.add("wrong");
+  fb(id,chosen===correct,ex.exp);
+}
+function norm(x){return x.toString().trim().toLowerCase().replace(/\s+/g,"").replace(/_/g,"").replace("ß","ss")
+  .replace(/[₀-₉]/g,d=>"0123456789"["₀₁₂₃₄₅₆₇₈₉".indexOf(d)]);}
+function checkCloze(id,blanks){
+  const ex=findEx(id);
+  let allOk=true;
+  blanks.forEach((b,i)=>{
+    const inp=document.getElementById(id+"_b"+i);
+    const ok=norm(inp.value)===norm(b);
+    inp.style.borderColor=ok?"var(--green)":"var(--red)";
+    if(!ok)allOk=false;
+  });
+  fb(id,allOk,ex.exp+(allOk?"":" (Lösung: "+blanks.join(", ")+")"));
+}
+function checkCalc(id,ans,tol){
+  const ex=findEx(id);
+  const v=parseFloat(document.getElementById(id+"_in").value.replace(",","."));
+  const target=parseFloat(ans);
+  const ok=!isNaN(v)&&Math.abs(v-target)<=tol;
+  fb(id,ok,ex.exp);
+}
+
+/* ----- MATCH ----- */
+const MATCH_STATE={};
+function matchPick(id,side,i){
+  const st=MATCH_STATE[id]; if(!st)return;
+  const el=document.getElementById(`${id}_${side}${i}`);
+  if(el.classList.contains("done"))return;
+  if(!st.sel){
+    st.sel={side,i,el}; el.classList.add("sel"); return;
+  }
+  if(st.sel.side===side){ // re-pick same side
+    st.sel.el.classList.remove("sel"); st.sel={side,i,el}; el.classList.add("sel"); return;
+  }
+  // we have one from each side -> check (left index must equal right index = same pair)
+  const li=st.sel.side==="L"?st.sel.i:i;
+  const ri=st.sel.side==="R"?st.sel.i:i;
+  const correct=(li===ri);
+  if(correct){
+    st.sel.el.classList.remove("sel"); st.sel.el.classList.add("done"); el.classList.add("done");
+    st.done++; st.sel=null;
+    if(st.done===st.total)fb(id,true,findEx(id).exp);
+  }else{
+    const wrongEl=el, prevEl=st.sel.el;
+    wrongEl.classList.add("wrong"); prevEl.classList.add("wrong");
+    setTimeout(()=>{wrongEl.classList.remove("wrong"); prevEl.classList.remove("wrong","sel");},700);
+    st.sel=null;
+    fb(id,false,"Diese Zuordnung passt nicht – probiere es erneut.");
+  }
+}
+
+/* ===================================================================
+   QUIZMODUS
+   =================================================================== */
+let QUIZ=null;
+function buildQuizPool(){
+  const pool=[];
+  ALL_SUBS.forEach(s=>s.ex.forEach((e,i)=>{
+    if(e.type==="mc"||e.type==="tf")pool.push({...e,sub:s.title,topic:s.topic});
+  }));
+  return pool;
+}
+function goQuiz(){
+  closeSidebar(); setActiveNav("Quizmodus");
+  const pool=buildQuizPool().sort(()=>Math.random()-0.5);
+  const n=Math.min(10,pool.length);
+  QUIZ={qs:pool.slice(0,n),i:0,correct:0,answered:false};
+  renderQuiz();
+}
+function renderQuiz(){
+  const c=document.getElementById("content");
+  if(QUIZ.i>=QUIZ.qs.length){
+    const pct=Math.round(QUIZ.correct/QUIZ.qs.length*100);
+    let msg= pct>=80?"Hervorragend! 🏆":pct>=60?"Gut gemacht! 👍":"Weiter üben! 💪";
+    c.innerHTML=`<div class="quiz-card" style="text-align:center">
+      <h2>Quiz abgeschlossen</h2>
+      <div class="quiz-score">${QUIZ.correct} / ${QUIZ.qs.length}</div>
+      <p style="font-size:1.1rem;margin-bottom:6px">${pct}% richtig</p>
+      <p style="color:var(--text-2)">${msg}</p>
+      <div class="quiz-actions" style="justify-content:center">
+        <button class="ex-btn" onclick="goQuiz()">🔄 Neues Quiz</button>
+        <button class="ex-btn" style="background:var(--bg-3);color:var(--text)" onclick="showDash()">🏠 Startseite</button>
+      </div></div>`;
+    window.scrollTo(0,0); return;
+  }
+  const q=QUIZ.qs[QUIZ.i]; QUIZ.answered=false;
+  let opts="";
+  if(q.type==="mc"){
+    opts=q.opts.map((o,i)=>`<button class="opt" onclick="quizAns(${i})">${o}</button>`).join("");
+  }else{
+    opts=`<button class="opt" onclick="quizAns(true)">✔ Wahr</button>
+          <button class="opt" onclick="quizAns(false)">✘ Falsch</button>`;
+  }
+  c.innerHTML=`<div class="quiz-card">
+    <div class="quiz-top"><span>🎯 Quizmodus</span><span>Frage ${QUIZ.i+1} / ${QUIZ.qs.length} · Punkte: ${QUIZ.correct}</span></div>
+    <div class="bar" style="margin:4px 0 8px"><span style="width:${QUIZ.i/QUIZ.qs.length*100}%"></span></div>
+    <div class="quiz-meta">${q.topic} · ${q.sub}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div id="quizOpts">${opts}</div>
+    <div class="ex-feedback" id="quizFb"></div>
+    <div class="quiz-actions"><button class="ex-btn" id="quizNext" style="display:none" onclick="quizNext()">Weiter →</button></div>
+  </div>`;
+  window.scrollTo(0,0);
+}
+function quizAns(val){
+  if(QUIZ.answered)return; QUIZ.answered=true;
+  const q=QUIZ.qs[QUIZ.i];
+  const correct = q.type==="mc" ? q.a : q.a; // index or boolean
+  const btns=document.querySelectorAll("#quizOpts .opt");
+  btns.forEach(b=>b.disabled=true);
+  let isOk;
+  if(q.type==="mc"){
+    isOk=(val===q.a);
+    btns[q.a].classList.add("correct");
+    if(!isOk)btns[val].classList.add("wrong");
+  }else{
+    isOk=(val===q.a);
+    btns[q.a?0:1].classList.add("correct");
+    if(!isOk)btns[val?0:1].classList.add("wrong");
+  }
+  if(isOk)QUIZ.correct++;
+  const f=document.getElementById("quizFb");
+  f.className="ex-feedback "+(isOk?"ok":"no");
+  f.innerHTML=(isOk?"✅ Richtig! ":"❌ Falsch. ")+q.exp;
+  document.getElementById("quizNext").style.display="inline-block";
+}
+function quizNext(){QUIZ.i++; renderQuiz();}
+
+/* ===================================================================
+   ACTIVE NAV HELPER
+   =================================================================== */
+function setActiveNav(label){
+  document.querySelectorAll(".sidebar .nav-item").forEach(n=>{
+    n.classList.toggle("active", n.textContent.trim()===label || n.textContent.includes(label));
+  });
+}
+
+/* ===================================================================
+   INIT
+   =================================================================== */
+function initApp(){
+  buildNav();
+  updateProgress();
+  showDash();
+}
+if(sessionStorage.getItem("bsk_auth")==="1") initApp();
+</script>
 </body>
 </html>
