@@ -1,0 +1,642 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O.KON Klausurtrainer · Konstruktion B1</title>
+<style>
+:root{
+  --ink:#0b1622; --panel:#10263b; --panel2:#0e2032; --line:rgba(120,180,230,.16);
+  --line2:rgba(120,180,230,.30); --text:#e8eef5; --dim:#8aa6c0; --dim2:#5f7d99;
+  --cyan:#4cc9f0; --orange:#ff7a45; --green:#41d39a; --red:#ff5d6c; --amber:#ffc857;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --sans:"Helvetica Neue",Arial,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--ink);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:26px 26px;
+  color:var(--text); font-family:var(--sans); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:920px;margin:0 auto;padding:20px 16px 80px}
+button{font-family:inherit;cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* header / titleblock */
+.tb{border:1px solid var(--line2);background:rgba(16,38,59,.7);backdrop-filter:blur(4px);margin-bottom:18px}
+.tb-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.tb h1{margin:0;font-size:20px;letter-spacing:.5px;font-weight:800;text-transform:uppercase}
+.tb h1 .sub{display:block;font-size:11px;letter-spacing:3px;color:var(--cyan);font-weight:600;margin-bottom:3px}
+.tb-meta{font-family:var(--mono);font-size:11px;color:var(--dim);text-align:right;line-height:1.7}
+.tb-meta b{color:var(--text)}
+.tabs{display:flex}
+.tab{flex:1;background:none;border:none;border-right:1px solid var(--line);color:var(--dim);
+  padding:11px 8px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;transition:.15s}
+.tab:last-child{border-right:none}
+.tab:hover{color:var(--text);background:rgba(76,201,240,.06)}
+.tab.on{color:var(--ink);background:var(--cyan)}
+
+/* generic */
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin:0 0 8px}
+.card{border:1px solid var(--line2);background:var(--panel);padding:0;margin-bottom:14px}
+.btn{background:var(--panel2);border:1px solid var(--line2);color:var(--text);padding:10px 16px;
+  font-size:13px;letter-spacing:.5px;font-weight:600;transition:.15s}
+.btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.primary{background:var(--cyan);color:var(--ink);border-color:var(--cyan)}
+.btn.primary:hover{background:#6fd6f5;color:var(--ink)}
+.btn.orange{background:var(--orange);color:var(--ink);border-color:var(--orange)}
+.btn.ghost{background:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.muted{color:var(--dim)}
+hr.dim{border:none;border-top:1px dashed var(--line2);margin:14px 0}
+
+/* theme chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{border:1px solid var(--line2);background:var(--panel2);color:var(--dim);padding:7px 12px;
+  font-size:12px;font-weight:600;letter-spacing:.3px;border-radius:2px;transition:.12s;display:flex;gap:8px;align-items:center}
+.chip:hover{color:var(--text)}
+.chip.on{background:rgba(76,201,240,.14);border-color:var(--cyan);color:var(--cyan)}
+.chip .ct{font-family:var(--mono);font-size:10px;opacity:.7}
+
+/* question */
+.qhead{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+.qtag{color:var(--cyan)}
+.qpts{border:1px solid var(--line2);padding:2px 8px;color:var(--amber)}
+.qtyp{color:var(--dim2)}
+.qbody{padding:16px 16px 4px}
+.qtext{font-size:17px;line-height:1.45;margin:0 0 6px;font-weight:500}
+.answer{background:var(--panel2);border-top:1px solid var(--line2);padding:14px 16px;white-space:pre-wrap;
+  font-size:14.5px;line-height:1.55;color:#dce9f5}
+.answer .alabel{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--green);text-transform:uppercase;display:block;margin-bottom:8px}
+.skizze-note{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:1px;margin-bottom:6px}
+.qactions{padding:12px 16px;display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line)}
+.grade{flex:1;min-width:90px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);padding:10px;
+  font-size:12px;font-weight:700;letter-spacing:.5px;transition:.12s}
+.grade.g-r:hover,.grade.g-r.sel{background:var(--green);color:var(--ink);border-color:var(--green)}
+.grade.g-p:hover,.grade.g-p.sel{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+.grade.g-f:hover,.grade.g-f.sel{background:var(--red);color:var(--ink);border-color:var(--red)}
+
+/* progress */
+.pbar{height:4px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--cyan);transition:width .3s}
+.timer{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:1px}
+.timer.warn{color:var(--amber)} .timer.crit{color:var(--red)}
+
+/* result */
+.scorebig{font-family:var(--mono);font-size:54px;font-weight:800;line-height:1}
+.note{font-family:var(--mono);font-size:54px;font-weight:800}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{border:1px solid var(--line2);background:var(--panel);padding:14px}
+.metric .v{font-family:var(--mono);font-size:28px;font-weight:800}
+.metric .l{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.bar{height:7px;background:var(--panel2);border:1px solid var(--line);margin-top:6px}
+.bar i{display:block;height:100%}
+.tlist .trow{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.tlist .trow:last-child{border-bottom:none}
+.tname{font-size:13px;font-weight:600}
+.tpct{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.center{text-align:center}
+.hide{display:none}
+@media(max-width:560px){
+  .statgrid{grid-template-columns:1fr}
+  .tb-top{flex-direction:column;align-items:flex-start}
+  .tb-meta{text-align:left}
+  .scorebig,.note{font-size:42px}
+}
+</style>
+<div class="wrap">
+<div class="tb">
+  <div class="tb-top">
+    <h1><span class="sub">Prüfungsvorbereitung B1 · O.KON</span>Klausurtrainer Konstruktion</h1>
+    <div class="tb-meta" id="meta">Prof. Dipl.-Ing. S. Kraus<br>Katalog: <b>135 Fragen</b> · 14 Themen<br>Klausur: 150 min / 150 P</div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-v="lern">Lernmodus</button>
+    <button class="tab" data-v="pruef">Prüfungsmodus</button>
+    <button class="tab" data-v="stat">Statistik</button>
+  </div>
+</div>
+<div id="app"></div>
+</div>
+<script>
+const THEMEN = [
+  {k:"anf", n:"Anforderungen"},
+  {k:"gru", n:"Gründung"},
+  {k:"mau", n:"Mauerwerk"},
+  {k:"erd", n:"Erdberührte Bauteile"},
+  {k:"holz", n:"Holzbauweise"},
+  {k:"stahl", n:"Stahlbauweise"},
+  {k:"dach", n:"Dach"},
+  {k:"schall", n:"Schallschutz"},
+  {k:"waerme", n:"Wärmeschutz"},
+  {k:"feucht", n:"Feuchteschutz"},
+  {k:"fass", n:"Fassade"},
+  {k:"wdvs", n:"WDVS"},
+  {k:"fenster", n:"Fenster"},
+  {k:"treppe", n:"Treppen"}
+];
+
+const FRAGEN = [
+// I. Anforderungen
+{id:"anf-1",t:"anf",p:3,typ:"text",f:"Es gibt drei Stufen von Technikstandards. Benennen Sie diese.",a:"Stufe 1: allgemein anerkannte Regel der Technik\nStufe 2: Stand der Technik\nStufe 3: Stand der Wissenschaft & Technik"},
+{id:"anf-2",t:"anf",p:4,typ:"text",f:"Was versteht man unter den allgemein anerkannten Regeln der Technik?",a:"1. wissenschaftlich begründet, technisch richtig,\n2. in den betreffenden geschulten Fachkreisen allgemein bekannt,\n3. in der Praxis bewährt."},
+{id:"anf-3",t:"anf",p:8,typ:"text",f:"Erklären Sie bei Bauprodukten/Bauverfahren anhand der Drei-Stufen-Theorie den Unterschied zwischen den allgemein anerkannten Regeln der Technik, dem Stand der Technik und dem Stand der Wissenschaft und Technik. Welche Ausführung ist gemäß VOB/BGB primär geschuldet?",a:"Stufe 3 (Stand v. Wissenschaft u. Technik): Neu entwickelte Bauprodukte/Bauverfahren – in Labor- und Feldversuchen erprobt.\nStufe 2 (Stand der Technik): Erprobte Bauprodukte/bewährte Bauverfahren – in der Praxis angewendet und hinreichend erprobt.\nStufe 1 (allg. anerk. Regeln der Technik): In der Praxis üblich und bewährt.\nOb VOB- oder BGB-Vertrag: Es wird eine Ausführung gemäß den „allgemein anerkannten Regeln der Technik“ geschuldet."},
+{id:"anf-4",t:"anf",p:4,typ:"text",f:"Was heißt MBO, was heißt LBO? Was gilt in Bayern?",a:"MBO = Musterbauordnung\nLBO = Landesbauordnung\nIn Bayern gilt die BayBO (Bayerische Bauordnung)."},
+{id:"anf-5",t:"anf",p:5,typ:"text",f:"Was versteht man unter den Technischen Baubestimmungen? Durch welches Institut werden diese bekannt gemacht?",a:"Einmal im Jahr veröffentlicht das DIBt (Deutsches Institut für Bautechnik) die Muster-Verwaltungsvorschrift Technische Baubestimmungen (MVV TB). Diese enthält alle Normen, die zur Einführung empfohlen und damit gesetzlich verbindlich sind. Die Einführung ist Sache der einzelnen Bundesländer."},
+{id:"anf-6",t:"anf",p:5,typ:"text",f:"Muss man Technische Baubestimmungen einhalten? Grundlage?",a:"Technische Baubestimmungen wie Normen, Richtlinien oder Merkblätter sind zunächst technische Regeln und Empfehlungen. Sie werden durch die Landesbauordnungen (LBO) bzw. speziell eingeführte technische Baubestimmungen der Länder rechtsverbindlich, wenn diese die Regeln ausdrücklich übernehmen (einführen) oder vorschreiben."},
+{id:"anf-7",t:"anf",p:2,typ:"text",f:"Wer veröffentlicht die Technischen Baubestimmungen in Deutschland?",a:"DIBt (Deutsches Institut für Bautechnik)"},
+{id:"anf-8",t:"anf",p:4,typ:"text",f:"Was ist eine Norm? Ist die Anwendung grundsätzlich verpflichtend?",a:"Eine Norm ist eine standardisierte technische Regel und/oder Vorgabe. Die Anwendung ist NICHT grundsätzlich verpflichtend."},
+{id:"anf-9",t:"anf",p:4,typ:"text",f:"Was ist eine CE-Kennzeichnung?",a:"Die CE-Kennzeichnung ist ein Konformitätszeichen, das anzeigt, dass ein Produkt den grundlegenden Anforderungen der EU entspricht und somit innerhalb des Europäischen Wirtschaftsraums (EWR) frei gehandelt werden darf."},
+{id:"anf-10",t:"anf",p:5,typ:"text",f:"Was ist der Unterschied zwischen CE-Kennzeichnung und einer Ü-Kennzeichnung?",a:"Seit 2016 gibt es nur noch die CE-Kennzeichnung für harmonisierte Bauprodukte. Das Ü-Zeichen gilt lediglich für nicht harmonisierte Produkte als Kennzeichnung, dass diese den nationalen Regeln entsprechen."},
+{id:"anf-11",t:"anf",p:3,typ:"text",f:"Gibt es Bauprodukte, die keinen Verwendungsnachweis haben müssen (nenne ein Beispiel)?",a:"Ja, Produkte ohne sicherheitsrelevante Funktion, z.B. Innenputze, Tapeten, Zierleisten etc."},
+{id:"anf-12",t:"anf",p:2,typ:"text",f:"Für was steht die Abkürzung DIN?",a:"DIN – Deutsches Institut für Normung e.V."},
+{id:"anf-13",t:"anf",p:5,typ:"text",f:"Beschreiben Sie kurz in vier Schritten, wie eine Norm entsteht.",a:"01 – Stellung eines Normungsantrags\n02 – Im Norm-Projekt erarbeiten alle Interessensgruppen die Inhalte der Norm im Konsens\n03 – Die Öffentlichkeit kommentiert den Norm-Entwurf (Gelbdruck)\n04 – DIN veröffentlicht die fertige Norm"},
+
+// II. Gründung
+{id:"gru-1",t:"gru",p:4,typ:"text",f:"Definieren Sie den Begriff Gründung.",a:"Die Gründung ist der Teil des Bauwerks, der die Lasten aus dem Bauwerk in den Boden ableitet. Baugrund und Bauwerk bilden eine konstruktive Einheit."},
+{id:"gru-2",t:"gru",p:3,typ:"text",f:"Was muss zur Bemessung einer Bauwerksgründung als erster Schritt erfolgen?",a:"Es muss eine Analyse der Baugrundparameter und des Grundwasserstands erfolgen."},
+{id:"gru-3",t:"gru",p:4,typ:"text",f:"Geben Sie Parameter an, die die Festigkeitseigenschaften von Böden bestimmen. (3 Stück)",a:"Korngröße, Kornfestigkeit, Kornform, Hohlräume/Porengefüge, Wassergehalt, Porendurchlässigkeit (3 nennen)."},
+{id:"gru-4",t:"gru",p:5,typ:"text",f:"Mit welcher Korngröße ist Kies (G) gemäß DIN 14688-1 definiert? Welche Eigenschaften hat Kies?",a:"Kies (G): Korngröße 2,0 mm < x < 63 mm. Hohe mechanische Festigkeit, gut zu entwässern."},
+{id:"gru-5",t:"gru",p:4,typ:"text",f:"Wie verhält sich Torf als Baugrund? Warum?",a:"Torf ist als Baugrund nicht geeignet, da er durch den hohen Wassergehalt und die organische Masse nicht belastbar ist."},
+{id:"gru-6",t:"gru",p:5,typ:"text",f:"Was versteht man unter „Mutterboden“? Wie ist damit bei einer Bauwerksgründung umzugehen?",a:"Mutterboden (Oberboden): oberste Bodenschicht aus Kies-, Sand-, Schluff- und Tongemischen, enthält Humus und Lebewesen (Dicke ca. 30 cm). Dieser ist immer abzutragen."},
+{id:"gru-7",t:"gru",p:8,typ:"text",f:"Welche Untersuchungen sind zur Erstellung eines Baugrundgutachtens notwendig und welche Inhalte hat es?",a:"Untersuchungen: Bohrungen, Sondierungen und/oder Schürfungen, üblicherweise durch einen Geologen.\nInhalte: Beschreibung der Bodenschichten (DIN 4022); Grundwasser- und Schichtenwasserstände; Boden-/Felsklassen und Bodenkennwerte; Beurteilung der Tragfähigkeit."},
+{id:"gru-8",t:"gru",p:6,typ:"text",f:"Welche zwei grundsätzlichen Gründungsarten gibt es? Benennen Sie je zwei Beispiele.",a:"Flachgründung: Plattengründung, Einzel- und Streifenfundament.\nTiefgründung: Fundamentblöcke, Pfahlgründung, Brunnenringe."},
+{id:"gru-9",t:"gru",p:4,typ:"text",f:"Ab welcher Tiefe spricht man von einer frostfreien Gründung?",a:"In Deutschland i.d.R. Mindesttiefe 80 cm (DIN 1054). In kälteren Regionen kann sich der Wert erhöhen."},
+{id:"gru-10",t:"gru",p:4,typ:"text",f:"Was ist bei nachträglichen Anbauten zu beachten?",a:"Das Gründungsniveau ist zu beachten. Es muss eine konsequente Trennung zwischen Alt- und Anbau hergestellt werden."},
+
+// III. Mauerwerk
+{id:"mau-1",t:"mau",p:6,typ:"text",f:"Was versteht man unter Mauerwerk? Aus welchen Komponenten besteht es?",a:"Mauerwerk ist ein künstlich hergestellter Baustoff aus einzelnen Steinen, die durch ein Bindemittel (meist Mörtel) verbunden werden. Steine aus Naturmaterialien (Naturstein) oder industriell (Ziegel, Kalksandstein, Betonstein).\nMerkmale: viele kleine Einheiten; Festigkeit durch Kombination Stein + Mörtel; tragend oder nichttragend."},
+{id:"mau-2",t:"mau",p:5,typ:"text",f:"Erklären Sie die Oktametrische Ordnung.",a:"Das in Deutschland übliche Mauersteinformat beruht auf der Achtel-Teilung eines Meters abzüglich der Fugen (Normal-/Leichtmauermörtel: Stoßfugen 10 mm, Lagerfugen 12 mm)."},
+{id:"mau-3",t:"mau",p:5,typ:"calc",f:"Geben Sie die Abmessungen eines Steins mit NF (Normalformat) an. Wie viele Schichten sind für die Höhe von 1,00 m notwendig?",a:"L = 240 mm, B = 115 mm, H = 71 mm.\n12 Schichten für 1,00 m beim Normalformat."},
+{id:"mau-4",t:"mau",p:3,typ:"text",f:"Welche unterschiedlichen Mörtelarten gibt es?",a:"Normalmauermörtel, Leichtmauermörtel, Dünnbettmörtel."},
+{id:"mau-5",t:"mau",p:3,typ:"skizze",f:"Bezeichnen Sie die Fugen (am Mauerstein).",a:"Längsfuge, Stoßfuge, Lagerfuge."},
+{id:"mau-6",t:"mau",p:6,typ:"text",f:"Was versteht man unter Überbindemaß? Welche Mindestanforderungen gelten? In welchem Regelwerk ist dies definiert?",a:"Das Überbindemaß ist der Mindestversatz von vertikalen Stoßfugen zwischen übereinanderliegenden Mauerwerksschichten. Abhängig von der Steinhöhe (> 0,4 h) und mindestens 45 mm. Festgelegt in DIN 1996-1."},
+{id:"mau-7",t:"mau",p:4,typ:"text",f:"Welche Arten von Wandaufbauten aus Mauerwerk gibt es (bauphysikalisch/gestalterisch)? (3 Stück)",a:"Einschaliges (monolithisches) Mauerwerk; einschaliges Mauerwerk mit Zusatzdämmung; zweischaliges Mauerwerk."},
+{id:"mau-8",t:"mau",p:6,typ:"skizze",f:"Zeichnen Sie die zweite Mauersteinschicht. Kennzeichnen Sie ½ und ¾ - Steine.",a:"Skizze: zweite Schicht im Verband mit Versatz; Ecken/Anschlüsse mit ½- und ¾-Steinen ausgleichen. (Selbstkontrolle anhand Verband + Überbindemaß)"},
+{id:"mau-9",t:"mau",p:5,typ:"text",f:"Bis zu welchem Maß dürfen Stoßfugen bei Plansteinen vermörtelt werden?",a:"Offene Fugen bis 5 mm zulässig.\nFugen 5 < x < 15 mm: schließen/vermörteln.\nFugen 15 < x < 50 mm: vollflächig vermörteln.\nFugen > 50 mm: mit Steinen schließen."},
+{id:"mau-10",t:"mau",p:4,typ:"text",f:"Was versteht man unter einem Kimmziegel?",a:"Kimmziegel werden zur Reduzierung der Wärmebrücke in den ersten Schichten am Wandfuß oberhalb von Decken zu unbeheizten Kellern/Tiefgaragen sowie raumseitig gedämmten Bodenplatten eingebaut."},
+
+// IV. Erdberührte Bauteile
+{id:"erd-1",t:"erd",p:4,typ:"text",f:"Benennen Sie häufige Fehlerquellen, die bei der Gründung zu Schäden führen können. (3 Stück)",a:"Fehlendes Baugrundgutachten; Veränderung der Bodenverhältnisse (z.B. Durchfeuchtung); unzureichende Sicherung der Baugrube; hydrologische Veränderungen (z.B. Vegetation); falsche Ausführung der Fundamente."},
+{id:"erd-2",t:"erd",p:2,typ:"text",f:"Welche Norm gilt als wichtigstes Regelwerk für die Abdichtung erdberührter Bauteile?",a:"DIN 18533 Teil 1-3."},
+{id:"erd-3",t:"erd",p:7,typ:"text",f:"Erklären Sie kurz das Vorgehen zur Anwendung dieser Norm. (7 Schritte)",a:"1 Anwendungsbereich klären\n2 Bodenverhältnisse klären (Baugrundgutachten)\n3 Raumnutzung klären\n4 Wassereinwirkungsklassen festlegen\n5 Risssituation klären\n6 Abdichtungsstoff wählen\n7 Abdichtungsbauart ableiten"},
+{id:"erd-4",t:"erd",p:3,typ:"text",f:"Was versteht man unter dem Bodenkennwert k? In welcher Einheit wird dieser gemessen?",a:"Wasserdurchlässigkeitsbeiwert k [m/s]."},
+{id:"erd-5",t:"erd",p:3,typ:"text",f:"Ab welchem Wert gilt ein Boden stark wasserdurchlässig gemäß DIN 18533-1?",a:"Ab k > 10⁻⁴ m/s."},
+{id:"erd-6",t:"erd",p:3,typ:"text",f:"Was heißt HHW und HGW? (DIN 18533)",a:"HHW: Höchster anzunehmender Hochwasserstand.\nHGW: Höchster anzunehmender Grundwasserstand."},
+{id:"erd-7",t:"erd",p:8,typ:"text",f:"Benennen Sie die 4 Wassereinwirkungsklassen (mit Untergruppen) gemäß DIN 18533.",a:"W1-E Bodenfeuchte u. nicht drückendes Wasser (W1.1-E stark durchlässig k>10⁻⁴; W1.2-E gering durchlässig k<10⁻⁴ mit Dränung n. DIN 4095).\nW2-E Drückendes Wasser (W2.1-E mäßig bis 3 m; W2.2-E hoch über 3 m Eintauchtiefe).\nW3-E nicht drückendes Wasser auf erdüberschütteten Decken (bis 10 cm Anstauhöhe).\nW4-E Spritzwasser u. Bodenfeuchte am Wandsockel."},
+{id:"erd-8",t:"erd",p:4,typ:"text",f:"Welche Mindestdicke muss eine bituminöse Abdichtung (PMBC) gemäß DIN 18533 bei W2.1-E haben? Was ist zu beachten?",a:"Mindestschichtdicke 4 mm. Es ist eine Verstärkungseinlage auszuführen."},
+{id:"erd-9",t:"erd",p:6,typ:"text",f:"Erklären Sie kurz den Unterschied zwischen einer „schwarzen“ und einer „weißen“ Wanne.",a:"Schwarze Wanne: Abdichtung als (meist bituminöse) Schicht auf tragender Wand/Bodenplatte aufgetragen.\nWeiße Wanne: Betonkonstruktion aus wasserundurchlässigem Beton; das Bauteil selbst ist wasserundurchlässig."},
+{id:"erd-10",t:"erd",p:3,typ:"text",f:"Benennen Sie das wichtigste Regelwerk zur Planung und Ausführung von „weißen Wannen“.",a:"WU-Richtlinie – Richtlinie für wasserundurchlässige Bauwerke aus Beton (Deutscher Ausschuss für Stahlbeton, DAfStb)."},
+{id:"erd-11",t:"erd",p:4,typ:"text",f:"Benennen Sie die drei Entwurfsgrundsätze gemäß WU-Richtlinie.",a:"a – Vermeidung von Trennrissen\nb – Festlegung von Trennrissbreiten\nc – Trennrissbreiten + planmäßige Abdichtung"},
+{id:"erd-12",t:"erd",p:4,typ:"text",f:"Benennen Sie zwei mögliche Fugenabdichtungen bei einer WU-Konstruktion (mind. eine geregelte).",a:"Umlaufwegvergrößerung; Einbettung; Anpressdruck; Verfüllen/Injektionsdichtung; Klemmkonstruktion; Klebedichtung."},
+{id:"erd-13",t:"erd",p:5,typ:"skizze",f:"Beschriften Sie die Zeichnung/Skizze (Dränage erdberührtes Bauteil).",a:"u.a.: Abdeckung Arbeitsraumverfüllung, Abdichtung, vertikale Dränschicht, Filtervlies/Filterschicht, Folie, Dränrohr DN 50, Abstände ≥30 cm / ≥20 cm / ≥10 cm, Druckausbreitungsbereich."},
+{id:"erd-14",t:"erd",p:3,typ:"text",f:"Was versteht man unter der Rückstauebene RSE?",a:"Die Rückstauebene (RSE) ist die höchste Ebene, bis zu der das Wasser in einer Entwässerungsanlage ansteigen kann."},
+{id:"erd-15",t:"erd",p:6,typ:"text",f:"Beschreiben Sie den Unterschied zwischen Rückstauverschluss und Hebeanlage. Benennen Sie je einen Vor- und Nachteil.",a:"Rückstauverschluss: Klappe, die automatisch schließt, wenn Wasser von außen nach innen drückt. Vorteil: günstig. Nachteil: keine Nutzung bei Rückstau möglich.\nHebeanlage: System mit Pumpe, das Abwasser über die Rückstauebene pumpt. Vorteil: Nutzung bei Rückstau möglich. Nachteil: teurer."},
+
+// V. Holzbauweise
+{id:"holz-1",t:"holz",p:5,typ:"text",f:"Was sind die charakteristischen Eigenschaften des Werkstoffes Holz?",a:"Natürlicher, organischer und inhomogener Werkstoff. Hygroskopisches Verhalten (Quellen/Schwinden je nach Luftfeuchtigkeit). Richtungsabhängige Eigenschaften (Anisotropie)."},
+{id:"holz-2",t:"holz",p:4,typ:"text",f:"Wie wird die Holzfeuchte angegeben?",a:"Maß u: Masse des im Holz enthaltenen Wassers (mw) bezogen auf die Masse des darrtrockenen Holzes (m0), üblicherweise in Prozent."},
+{id:"holz-3",t:"holz",p:4,typ:"text",f:"Was versteht man unter der Gleichgewichtsfeuchte von Holz?",a:"Ist das Holz bis zur Fasersättigung heruntergetrocknet, stellt sich in Abhängigkeit von der umgebenden relativen Luftfeuchtigkeit eine Gleichgewichtsfeuchte ein."},
+{id:"holz-4",t:"holz",p:4,typ:"text",f:"In welche Richtungen kann Holz schwinden und quellen? In welche Richtung am stärksten?",a:"Radial, tangential und axial. Tangential ist das Schwinden/Quellen am größten."},
+{id:"holz-5",t:"holz",p:6,typ:"text",f:"Benennen Sie drei technische Holzprodukte und erklären Sie ihre übliche Verwendung.",a:"KVH (Konstruktionsvollholz): Holzrahmenbau, Dachstühle, tragende Konstruktionen.\nBSH (Brettschichtholz/Leimbinder): Träger, Stützen, große Spannweiten.\nOSB (Oriented Strand Board): Beplankung, Schalung, Aussteifung."},
+{id:"holz-6",t:"holz",p:8,typ:"text",f:"Benennen Sie die unterschiedlichen Holzbauweisen (3 Stück) mit je einem Vor- und Nachteil.",a:"Holzrahmenbauweise: + ökonomisch; − Schallschutz durchschnittlich, ggf. Zusatzmaßnahmen.\nHolzskelettbauweise: + größere Spannweiten; − aufwendigere Knotenpunkte, meist Montage vor Ort, kostenintensiver.\nHolzmassivbau: + Schall- und Brandschutz überdurchschnittlich; − kostenintensiv."},
+{id:"holz-7",t:"holz",p:6,typ:"text",f:"Benennen Sie verschiedene Verbindungsmittel für Holzbaukonstruktionen mit Beispielen. (3 Stück)",a:"Mechanisch (Metall): Nägel, Schrauben, Bolzen.\nPlattenförmig (Metall): Balkenschuh, Winkel, Lochblech.\nTraditionell (Holz): Zapfen, Blattung, Holzdübel.\nGeklebt: BSH, CLT-Verbindungen."},
+{id:"holz-8",t:"holz",p:8,typ:"skizze",f:"Beschreiben Sie die Ebenen eines Wandaufbaus einer Holzständerkonstruktion und leiten Sie die bauphysikalischen Aufgaben ab. Skizze.",a:"Fassadenbekleidung mit Lattung/Konterlattung zur Hinterlüftung – Regenschutz (mit Rücktrocknungspotential).\nWinddichtheitsebene – Winddichtheit (diffusionshemmend/-dicht).\nDämmebene mit Traghölzern – Dämmung + tragende Funktion.\nLuftdichtigkeitsebene – z.B. OSB-Platte/Folie (diffusionshemmend/-dicht).\nInnenausbau: z.B. Installationsebene."},
+{id:"holz-9",t:"holz",p:6,typ:"text",f:"Wie wird der konstruktive Holzschutz im Sockelbereich gemäß DIN 68800-2 umgesetzt?",a:"Drei Möglichkeiten den Sockel auszubilden; Abstand der Holzbauteile zur Geländeoberfläche:\n• 30 cm bei unklarem Geländeverlauf\n• 15 cm bei Kiesbett (ohne zusätzliche Vertikalabdichtung)\n• 5 cm bei Kiesbett in Verbindung mit Vertikalabdichtung"},
+
+// VI. Stahlbauweise
+{id:"stahl-1",t:"stahl",p:6,typ:"text",f:"Stahl im Bauwesen: Geben Sie je drei Vor- und Nachteile an.",a:"Vorteile: hohe Festigkeit; geringes Eigengewicht; Duktilität/homogenes Material; Recyclingfähigkeit; präzise Vorfertigung.\nNachteile: hoher Energieaufwand; Korrosion; geringe Feuerbeständigkeit; Schallschutz ist zu planen; kostenintensiv."},
+{id:"stahl-2",t:"stahl",p:5,typ:"text",f:"Welche Möglichkeiten des Korrosionsschutzes sind bekannt? Nennen Sie je zwei Beispiele.",a:"Passiver Korrosionsschutz: Betonumhüllung (Stahlbeton); Verzinken, Beschichten.\nAktiver Korrosionsschutz: Legieren (nichtrostende Stähle); kathodischer Schutz, Inhibitoren (Hemmstoffe)."},
+{id:"stahl-3",t:"stahl",p:5,typ:"text",f:"Geben Sie die Grundregeln im konstruktiven Korrosionsschutz bei Stahlbauteilen an. (3 Stück)",a:"Oberflächen im Freien geneigt; Konstruktion an allen Teilen gut zugänglich (Beschichtungsauftrag); Spalten/Zwischenräume > 10 mm verschließen; Profilflächen mit Mindestabständen (DIN 12944-3); Kanten abrunden; Entwässerungsöffnungen gegen Wasseransammlung."},
+
+// VII. Dach
+{id:"dach-1",t:"dach",p:4,typ:"text",f:"Benennen Sie die Hauptanforderungen an ein Dach als Bauteil. (3 Stück)",a:"Schutz vor Feuchtigkeit von außen; Wärmeschutz; Luftdichtigkeit; Schutz vor Feuchtigkeit von innen (Dampfdiffusionsschutz)."},
+{id:"dach-2",t:"dach",p:5,typ:"skizze",f:"Machen Sie eine schematische Skizze folgender Dachformen: Satteldach, Walmdach, Sheddach.",a:"Satteldach: zwei geneigte Flächen, First. Walmdach: zusätzlich geneigte Flächen an Giebelseiten. Sheddach: sägezahnartige, einseitig geneigte Flächen."},
+{id:"dach-3",t:"dach",p:6,typ:"skizze",f:"Beschriften Sie die Zeichnung/Skizze (Dachteile).",a:"1 Traufe, 2 Giebel, 3 Ortgang, 4 Grat, 5 Kehle, 6 Gaube, 7 First, 8 Dachfläche."},
+{id:"dach-4",t:"dach",p:5,typ:"text",f:"Benennen Sie die üblichen Schichten des Dachaufbaus eines geneigten, wärmegedämmten Satteldachs (von außen nach innen).",a:"Dacheindeckung mit Lattung/Konterlattung; Unterspannbahn (opt. auf Schalung); Sparren mit Zwischensparrendämmung; Dampfbremse/-sperre; Innenausbau."},
+{id:"dach-5",t:"dach",p:7,typ:"text",f:"Erklären Sie den Unterschied zwischen Unterdach, Unterdeckung und Unterspannung.",a:"Unterdach: wasserdichte Schicht aus nicht diffusionsoffenen Werkstoffen, auf Schalung/druckfestem Dämmstoff unter der Dachdeckung.\nUnterdeckung: Schicht unterhalb der Dachdeckung, schützt vor Staunässe, Flugschnee, Treibregen, Kondensat, Staub; liegt auf Sparren/Dämmung/Schalung; je nach Klassifizierung regensicher bzw. wasserdicht.\nUnterspannung: Schicht unterhalb der Dachdeckung, schützt vor Flugschnee, Treibregen, Kondensat, Staub; frei gespannt auf den Sparren."},
+{id:"dach-6",t:"dach",p:3,typ:"text",f:"Was versteht man unter dem sd-Wert? In welcher Einheit wird er gemessen?",a:"Der sd-Wert gibt die wasserdampfdiffusionsäquivalente Luftschichtdicke an. Einheit: Meter (m)."},
+{id:"dach-7",t:"dach",p:6,typ:"skizze",f:"Was kann bei einem wärmegedämmten Dach im Winter passieren, wenn die Dampfbremse Leckagen hat? Skizze.",a:"Feuchtwarme Luft gelangt durch Fugen/Leckagen in den kalten äußeren Bereich. Dort kondensiert Wasserdampf → Verminderung der Wärmedämmwirkung; Bauschäden wie Schimmelbildung und Fäulnis möglich."},
+{id:"dach-8",t:"dach",p:8,typ:"skizze",f:"Erklären Sie folgende Flachdach-Aufbauten und fertigen Sie je eine Skizze: Warmdach, Duo-Dach, Umkehrdach.",a:"Warmdach (v. außen): Kies, Schutzschicht, Abdichtung, Dämmung, Dampfsperre, Tragschicht.\nDuo-Dach: zusätzliche (wasserbeständige) Dämmschicht über der Abdichtung; Dämmung ober- und unterhalb der Abdichtung.\nUmkehrdach: wasserbeständige Dämmung liegt über der Abdichtung (Abdichtung auf Tragschicht), darüber Schutzschicht/Kies."},
+{id:"dach-9",t:"dach",p:3,typ:"text",f:"Benennen Sie Materialien für eine Flachdachabdichtung. (3 Stück)",a:"Bitumenbahnen, Kunststoffbahnen, EPDM-Folien, Flüssigkunststoff."},
+{id:"dach-10",t:"dach",p:7,typ:"text",f:"Benennen Sie die 7 wichtigen Schritte zur Planung einer Dachentwässerung.",a:"1 Berechnungsregenspende r ermitteln\n2 Wirksame Dachfläche A ermitteln\n3 Abflussbeiwert C ermitteln\n4 Regenabfluss Q = r·A·C errechnen\n5 Gefälle planen\n6 Abläufe (Position, Höhe, Anzahl) planen\n7 Fall- und Sammelleitungen dimensionieren"},
+{id:"dach-11",t:"dach",p:4,typ:"text",f:"Benennen Sie die wichtigsten DIN-Normen zur Bemessung der Dachentwässerung.",a:"DIN EN 12056-3 (Schwerkraftentwässerungsanlagen, Teil 3: Dachentwässerung, Planung und Bemessung).\nDIN 1986-100 (Entwässerungsanlagen für Gebäude und Grundstücke, in Verbindung mit DIN EN 752 und DIN EN 12056)."},
+
+// VIII. Schallschutz
+{id:"schall-1",t:"schall",p:3,typ:"text",f:"Erklären Sie die Einheit Dezibel.",a:"Die Dezibel-Skala ist eine logarithmische Skala, mit der die physikalische Größe des Schalldrucks in relativer Art dargestellt wird."},
+{id:"schall-2",t:"schall",p:3,typ:"text",f:"Welcher Grundsatz gilt beim Schallschutz einschaliger Bauteile?",a:"Verdopplung des Gewichts verbessert den Schallschutz um ca. 6 dB."},
+{id:"schall-3",t:"schall",p:4,typ:"text",f:"Was versteht man physikalisch unter Schall?",a:"Schall ist eine mechanische Schwingung, die sich als Welle durch ein elastisches Medium (Luft, Wasser, Festkörper) ausbreitet."},
+{id:"schall-4",t:"schall",p:5,typ:"text",f:"Welche Schalldämmanforderungen werden an Wohnungseingangstüren gestellt?",a:"Wohnung mit Diele: erf. Schalldämm-Maß Rw = 27 dB. Tür direkt in Aufenthaltsraum: Rw = 37 dB. Vorhaltemaß von 5 dB beachten."},
+{id:"schall-5",t:"schall",p:2,typ:"text",f:"Was regelt die DIN 4109?",a:"Den Mindestschallschutz."},
+{id:"schall-6",t:"schall",p:4,typ:"text",f:"Was ist die kennzeichnende Größe für den Trittschall? Wie verhält sie sich in der Bewertung?",a:"Norm-Trittschallpegel Lnw bzw. L'nw. Je niedriger der Wert, desto besser das Schalldämm-Maß."},
+{id:"schall-7",t:"schall",p:2,typ:"text",f:"In welchem Frequenzbereich finden bauakustische Messungen statt?",a:"100 Hz – 3150 Hz."},
+{id:"schall-8",t:"schall",p:4,typ:"text",f:"Was versteht man unter dem bewerteten Schallpegel?",a:"Ein Schalldruckpegel (in dB), der mithilfe eines Frequenzfilters an die Hörempfindlichkeit des Menschen angepasst wird (Bewertungskurve A)."},
+{id:"schall-9",t:"schall",p:6,typ:"text",f:"Erklären Sie kurz: Luftschall, Körperschall und Erschütterung.",a:"Luftschall: Ausbreitung von Schall in der Luft (Sprache, Musik, Straßenlärm).\nKörperschall: durch Stöße/Erschütterungen auf ein Bauteil erzeugt (Schritte, Möbelrücken, fallende Gegenstände).\nErschütterung: tieffrequente Form des Körperschalls (Körperschallschwingung)."},
+{id:"schall-10",t:"schall",p:5,typ:"text",f:"Worin liegt der Vorteil im Schallschutz von zweischaligen Konstruktionen?",a:"Masse-Feder-Masse-Prinzip: keine feste Verbindung zwischen den Schalen; absorbierende Einlage im Hohlraum. Verbesserung bei mittleren und hohen Frequenzen."},
+
+// IX. Wärmeschutz
+{id:"waerme-1",t:"waerme",p:3,typ:"text",f:"Benennen Sie drei zentrale Ziele des baulichen Wärmeschutzes.",a:"Energieeffizienz; Behaglichkeit; Vermeidung von Bauschäden."},
+{id:"waerme-2",t:"waerme",p:4,typ:"text",f:"Wie erfolgt der Wärmetransport?",a:"Wärmeleitung (Konduktion); Wärmestrahlung (Radiation); Luftwärmestrom (Konvektion)."},
+{id:"waerme-3",t:"waerme",p:4,typ:"text",f:"Wie heißt der Wert der Wärmeleitfähigkeit, in welcher Einheit, und was sagt die Größe aus?",a:"Wärmeleitfähigkeit λ (Lambda), Einheit W/mK. Je kleiner λ, desto besser dämmt das Material."},
+{id:"waerme-4",t:"waerme",p:4,typ:"text",f:"Was versteht man unter dem Wärmedurchlasswiderstand R? Wie wird er berechnet?",a:"Der R-Wert beschreibt die Dämmleistung eines einzelnen Materials/einer Schicht, die Dicke wird berücksichtigt. R = d/λ."},
+{id:"waerme-5",t:"waerme",p:5,typ:"text",f:"Was versteht man unter dem U-Wert eines Bauteils? Wie wird er berechnet, in welcher Einheit?",a:"Der Wärmedurchgangskoeffizient (U-Wert) gibt an, wie viel Wärme pro m² und Kelvin durch ein gesamtes Bauteil verloren geht. Kehrwert des Gesamtwärmedurchlasswiderstands: U = 1/(Rsi + R1 + R2 + … + Rse). Einheit W/m²K."},
+{id:"waerme-6",t:"waerme",p:3,typ:"text",f:"Ab welcher Oberflächentemperatur ist bei 50 % Luftfeuchtigkeit und 20 °C Innentemperatur Schimmelgefahr gegeben?",a:"Ab 12,6 °C."},
+{id:"waerme-7",t:"waerme",p:3,typ:"text",f:"Was versteht man unter einer Wärmebrücke?",a:"Bereiche der Gebäudehülle, an denen stark erhöhte Wärmeströme auftreten."},
+{id:"waerme-8",t:"waerme",p:5,typ:"text",f:"Nennen Sie typische Wärmebrücken und mögliche Lösungen.",a:"Typisch: Fensteranschlüsse, Balkonplatten, Rollladenkästen, Ecken/Gebäudekanten.\nLösung: wärmebrückenarme Konstruktionen, thermisch getrennte Bauteile, sorgfältige Detailplanung."},
+{id:"waerme-9",t:"waerme",p:2,typ:"text",f:"In welchen Gesetzen und Regelwerken ist der Wärmeschutz geregelt?",a:"GEG – DIN 4108 (1-3)."},
+{id:"waerme-10",t:"waerme",p:3,typ:"text",f:"Welcher Rse-Wert wird beim Übergang vom Keller ins Erdreich angesetzt? Einheit des Wärmeübergangswiderstands?",a:"0,00 (m²K)/W."},
+
+// X. Feuchteschutz
+{id:"feucht-1",t:"feucht",p:4,typ:"text",f:"Was versteht man unter relativer Feuchtigkeit? In welcher Einheit?",a:"Maß dafür, wie viel Wasserdampf sich tatsächlich in der Luft befindet, im Verhältnis zur maximal möglichen Wasserdampfmenge bei einer bestimmten Temperatur. Einheit: %."},
+{id:"feucht-2",t:"feucht",p:3,typ:"text",f:"Was passiert bei einer relativen Feuchtigkeit von 100 %? Wie nennt man dieses Phänomen?",a:"Es bildet sich flüssiges Kondensat. Taupunkt."},
+{id:"feucht-3",t:"feucht",p:3,typ:"text",f:"Was versteht man unter dem sd-Wert?",a:"Kenngröße in [m]; die wasserdampfdiffusionsäquivalente Luftschichtdicke gibt an, wie stark ein Bauteil in einer gewissen Schichtdicke den Wasserdampfdurchtritt im Vergleich zu einer äquivalenten Luftschicht behindert."},
+{id:"feucht-4",t:"feucht",p:3,typ:"text",f:"Was versteht man unter Konvektion?",a:"Konzentrationsausgleich durch Luftströmung bei Luftdruckausgleich."},
+{id:"feucht-5",t:"feucht",p:3,typ:"text",f:"Was versteht man unter Diffusion?",a:"Wasserdampf wandert langsam durch Bauteile – angetrieben durch das Dampfdruckgefälle."},
+{id:"feucht-6",t:"feucht",p:4,typ:"text",f:"Wie hoch ist die Sättigungsdampfkonzentration bei 20 °C, 10 °C und 0 °C?",a:"17,3 g/m³ (20 °C); 9,4 g/m³ (10 °C); 4,8 g/m³ (0 °C)."},
+{id:"feucht-7",t:"feucht",p:3,typ:"text",f:"Was sind die Hauptfeuchtequellen in Gebäuden? (3 Stück)",a:"Personen, Kochen, Wäsche trocknen, Duschen, Baufeuchte, Undichtigkeiten."},
+{id:"feucht-8",t:"feucht",p:4,typ:"text",f:"Nennen Sie wichtige Regelungen (Normen) für den inneren Feuchteschutz.",a:"DIN 4108-1 bis -3; DIN 4108-7; Gebäudeenergiegesetz GEG; DIN 1946-6."},
+{id:"feucht-9",t:"feucht",p:4,typ:"text",f:"Was sind die zentralen Ziele des inneren Feuchteschutzes? (3 Stück)",a:"Schutz der Bauteile; Energieeffizienz; Gesundheit der Bewohner; Vermeidung von Schimmel."},
+{id:"feucht-10",t:"feucht",p:4,typ:"text",f:"Welche baulichen/planerischen Maßnahmen sind zu beachten? (3 Stück)",a:"Luftdichtigkeitsschicht ausbilden; Dampfdichtigkeit gewährleisten; Mindestwärmeschutz gewährleisten; Vermeidung von Wärmebrücken; Lüftungskonzept."},
+
+// XI. Fassade
+{id:"fass-1",t:"fass",p:5,typ:"text",f:"Was sind die Aufgaben/Funktionen einer Fassade? (5 Stück)",a:"Witterungsschutz (Regen, Wind, UV); Wärmeschutz; Schallschutz; Brandschutz; tragende/aussteifende Aufgaben (bei bestimmten Systemen); Architektur/Gestaltung."},
+{id:"fass-2",t:"fass",p:5,typ:"text",f:"Benennen Sie verschiedene Fassadentypen mit je einem Materialbeispiel. (3 Stück)",a:"Monolithische Fassaden, z.B. Poroton.\nNicht hinterlüftete Fassaden, z.B. MW + WDVS.\nHinterlüftete Fassaden mit Bekleidung, z.B. Holzständer + Holzverschalung."},
+{id:"fass-3",t:"fass",p:3,typ:"text",f:"Nennen Sie zwei übliche Bekleidungen einer hinterlüfteten Fassade aus Holz.",a:"Deckelschalung, Schindeln."},
+{id:"fass-4",t:"fass",p:2,typ:"text",f:"Nennen Sie einen Nachteil einer Fassadenbekleidung aus Holz.",a:"Muss regelmäßig gewartet werden."},
+{id:"fass-5",t:"fass",p:4,typ:"text",f:"Nennen Sie zwei Vor- und zwei Nachteile einer Naturstein-Fassadenbekleidung.",a:"Vorteile: sehr langlebig, nicht brennbar.\nNachteile: hoher Montageaufwand, teuer."},
+
+// XII. WDVS
+{id:"wdvs-1",t:"wdvs",p:5,typ:"text",f:"Benennen Sie die Schichten eines WDVS-Fassadensystems.",a:"Tragende Wand; Dämmstoff mit Befestigung; Armierungsputz (Unterputz mit Gewebe); Oberputz; Anstrich (systemabhängig)."},
+{id:"wdvs-2",t:"wdvs",p:3,typ:"text",f:"Welches ist der am häufigsten in D verbaute Dämmstoff bei WDVS? Warum?",a:"EPS (expandiertes Polystyrol). Sehr günstig – wirtschaftliche Gründe."},
+{id:"wdvs-3",t:"wdvs",p:5,typ:"text",f:"Wie unterscheiden sich mineralischer und organischer Putz in ihren Eigenschaften?",a:"Mineralischer Putz: diffusionsoffen, hohe Festigkeit, anfänglich alkalisch → Algenbildung reduziert.\nOrganischer Putz: elastisch, einfache Verarbeitung, weniger Rissbildung, große Farbauswahl."},
+{id:"wdvs-4",t:"wdvs",p:3,typ:"text",f:"Wie hoch ist der Mindestanteil der Klebekontaktfläche bei der Wulst-Punkt-Verklebung einer WDVS-Dämmplatte?",a:"40 %."},
+{id:"wdvs-5",t:"wdvs",p:4,typ:"text",f:"Wie hat die Verlegung der Dämmplatten bei einem WDVS zu erfolgen? Nennen Sie drei Kriterien.",a:"Verlegung im Verband; Stoßfugen > 10 cm versetzt; keine Kreuzfugen."},
+{id:"wdvs-6",t:"wdvs",p:3,typ:"text",f:"Was ist bei Fenstern in Bezug auf den Armierungsputz zu beachten?",a:"Die Ecken benötigen eine zusätzliche Diagonalarmierung."},
+{id:"wdvs-7",t:"wdvs",p:5,typ:"skizze",f:"Beschriften Sie das Sockeldetail.",a:"+30 cm Planungsmaß über GOK; Putzsystem mit Gewebeeinlage; >15 cm im Endzustand über GOK; mind. 5 cm GOK; Putzabdichtung/Feuchteschutz; Schutzlage mit Gleitschicht; Fassaden-/Sockel-/Perimeterdämmung; Bauwerksabdichtung nach DIN 18533-1."},
+{id:"wdvs-8",t:"wdvs",p:4,typ:"text",f:"Wo sitzt die Rollladenschiene geometrisch zum Bordprofil, damit keine „Gewerkelücke“ entsteht? (zwei Möglichkeiten)",a:"1. Bordprofil wird ausgeklinkt.\n2. Die Rollladenschiene sitzt vor dem Bordprofil."},
+{id:"wdvs-9",t:"wdvs",p:5,typ:"text",f:"Was ist beim Brandschutz von EPS bei GK 4-5 zu beachten, wenn die Dämmstoffdicke 100 mm > d > 300 mm beträgt?",a:"Entweder umlaufende Brandriegel aus Mineralwolle, oder Sturzschutz bzw. dreiseitige Einfassung der Fenster mit nichtbrennbarer Mineralwolle-Dämmung."},
+{id:"wdvs-10",t:"wdvs",p:5,typ:"text",f:"Handelt es sich bei einem WDVS um ein geregeltes Bauprodukt? Begründen Sie und erklären Sie die Art der Regelung.",a:"Nein, WDVS ist ein nicht geregeltes Bauteil. Es wird durch abZ (allgemeine bauaufsichtliche Zulassung) oder aBG (allgemeine Bauartgenehmigung) bzw. durch die ETA bestätigt/geregelt."},
+
+// XIII. Fenster
+{id:"fenster-1",t:"fenster",p:5,typ:"text",f:"Benennen Sie die wesentlichen Anforderungen eines Fensters. (5 Stück)",a:"Tageslichtversorgung; Belüftung; Wärmeschutz/Energieeffizienz; Feuchteschutz; Schallschutz; Brandschutz (je nach Anforderung); Sichtbeziehung nach außen; gestalterische Wirkung; Einbruchschutz."},
+{id:"fenster-2",t:"fenster",p:5,typ:"skizze",f:"Bezeichnen Sie die Nummern 1–8 eines Kunststofffensters.",a:"1 Blendrahmen, 2 Flügelrahmen, 3 Luftkammern, 4 Glasleiste, 5 Stahlarmierung, 6 Fensterfalz, 7 Glasfalz, 8 Abstandshalter."},
+{id:"fenster-3",t:"fenster",p:6,typ:"text",f:"Nennen Sie vier übliche Materialien für Fensterrahmen mit je einem Vor- und Nachteil.",a:"Holz: + gute Dämmeigenschaften, − regelmäßige Pflege.\nHolz-Alu: + sehr langlebig, − teuer.\nKunststoff: + wirtschaftlich, − UV-Alterung.\nAluminium: + schlanke Profile, − teuer."},
+{id:"fenster-4",t:"fenster",p:5,typ:"text",f:"Benennen Sie die 5 Schritte der Floatglas-Herstellung.",a:"Rohstoffaufbereitung; Schmelzen; Floatprozess-Formgebung; Abkühlen; Schneiden/Qualitätskontrolle."},
+{id:"fenster-5",t:"fenster",p:8,typ:"text",f:"Welche Glasarten außer Floatglas sind bekannt? Eigenschaften, Herstellprozess und übliche Anwendung.",a:"ESG (Einscheibensicherheitsglas): Floatglas wird erhitzt (ca. 600 °C); hohe Stoß-/Biegefestigkeit; zerfällt bei Bruch in kleine, stumpfe Krümel; Duschkabinen, Glastüren, Geländer, Möbel.\nVSG (Verbundsicherheitsglas): mind. zwei Glasscheiben durch eine Folie (z.B. PVB) verbunden; sehr hohe Sicherheit, Splitter haften an der Folie; Überkopfverglasungen, Glasdächer."},
+{id:"fenster-6",t:"fenster",p:3,typ:"text",f:"Was versteht man unter einer „warmen Kante“?",a:"Ein thermisch optimierter Randverbund bei einer Isolierverglasung."},
+{id:"fenster-7",t:"fenster",p:5,typ:"text",f:"Was ist beim Einbau eines Fensters zu beachten? Aufgaben der Anschlussfugen innen vs. außen, mit Beispielmaterial.",a:"Innen – luftdicht – Dichtfolie.\nAußen – wind- und regendicht – Anputzleiste."},
+{id:"fenster-8",t:"fenster",p:4,typ:"text",f:"Wie werden Fenster befestigt? Unterscheiden Sie vertikale und horizontale Lastabtragung.",a:"Vertikale Last: Klotzung/Dübel/Konsolen.\nHorizontale Last: Dübel/Laschen/Konsolen."},
+{id:"fenster-9",t:"fenster",p:5,typ:"skizze",f:"Wo ist das Fenster bei einer monolithischen Wand bauphysikalisch am besten zu platzieren? Warum? Skizze.",a:"Im mittleren Drittel der Wand, da dann der Isothermenverlauf gradlinig ist und es nicht zu einer kritischen Oberflächentemperatur im Inneren kommt."},
+
+// XIV. Treppen
+{id:"treppe-1",t:"treppe",p:4,typ:"text",f:"Benennen Sie die wichtigsten Regelwerke zum Thema Treppen im Hochbau. (3 Stück)",a:"BayBO; DIN 18065; DIN 18040; Arbeitsstättenrichtlinie; ggf. Schulbaurichtlinie."},
+{id:"treppe-2",t:"treppe",p:5,typ:"text",f:"Unterschied zwischen notwendiger und nicht notwendiger Treppe?",a:"Notwendige Treppe: nach behördlichen Vorschriften als Teil des Rettungsweges vorhanden sein muss.\nNicht notwendige Treppe: zusätzliche Treppe."},
+{id:"treppe-3",t:"treppe",p:2,typ:"text",f:"Wie viele Steigungen sind bei notwendigen Treppen pro Treppenlauf maximal zulässig?",a:"18 Steigungen."},
+{id:"treppe-4",t:"treppe",p:4,typ:"text",f:"Was versteht man unter der Treppenformel (Schrittmaßregel)? Wie lautet sie?",a:"Das Steigungsverhältnis wird mit der Schrittmaßregel geplant: 2s + a = 63 cm (Bereich 59–65 cm)."},
+{id:"treppe-5",t:"treppe",p:8,typ:"calc",f:"Geschosshöhe 3,00 m. Wie viele Steigungen sind für eine notwendige Treppe zu planen? Berechnen Sie Steigung und Auftrittslänge. Wie lang ist der Treppenlauf?",a:"300/18 = 16,67 → 17 Steigungen.\nSteigung: 300/17 = 17,64 cm.\nAuftritt: 2s + a = 63–65 cm → a = 29 cm.\nTreppenlauf: 16 × 29 cm = 4,64 m."},
+{id:"treppe-6",t:"treppe",p:6,typ:"text",f:"Welche Geländerhöhe ist ab welcher Absturzhöhe gemäß BayLBO erforderlich? Und bei Arbeitsstätten?",a:"LBO: Absturzhöhe <12 m → 90 cm; >12 m → 110 cm.\nArbeitsstättenverordnung: <12 m → 100 cm; >12 m → 110 cm."},
+{id:"treppe-7",t:"treppe",p:6,typ:"text",f:"Gibt es Anforderungen an die Geländerausführung bei öffentlichen Gebäuden? Wenn ja, welche?",a:"<12 m → 100 cm; >12 m → 110 cm. Öffnungen < 12 cm. Kein Über-/Durchklettern möglich. Unterkante so ausbilden, dass ein Würfel mit Kantenlänge 15 cm nicht zwischen Stufen und Geländer hindurchgeschoben werden kann."},
+{id:"treppe-8",t:"treppe",p:5,typ:"text",f:"Welche Toleranzen sind bei Treppen innerhalb eines Treppenlaufs erlaubt?",a:"Istmaß von Steigung s und Auftritt a darf gegenüber dem Nennmaß (Sollmaß) um nicht mehr als 5 mm abweichen. Von einer Stufe zur benachbarten darf die Abweichung der Istmaße ebenfalls nicht mehr als 5 mm betragen."},
+{id:"treppe-9",t:"treppe",p:5,typ:"text",f:"Welche Steigung darf eine Rampe maximal haben? Ab wie viel m ist ein Podest in welcher Länge zu planen? Warum?",a:"Max. 6 %. Alle 6 m ein Podest > 1,50 m. Aus sicherheitstechnischen Gründen."},
+{id:"treppe-10",t:"treppe",p:8,typ:"calc",f:"Zeichnen Sie die Grundgeometrie einer einläufigen Treppe in Schnitt und Grundriss. 15 Stg 17,67/29, Geschosshöhe 2,65 m.",a:"15 Steigungen à 17,67 cm = 2,65 m; Auftritt 29 cm; Lauflänge = 14 × 29 cm = 4,06 m. Schnitt: ansteigende Stufen, Geschosshöhe 2,65 m; Grundriss: 15 Stufen, Auftritt 29 cm."}
+];
+
+/* ---------- Persistenz ---------- */
+const SKEY="okon-stats-v1";
+let STATS={}; // id -> {r,p,f}
+async function loadStats(){
+  try{const o=await window.storage.get(SKEY); if(o&&o.value) STATS=JSON.parse(o.value);}catch(e){STATS={};}
+}
+async function saveStats(){
+  try{await window.storage.set(SKEY, JSON.stringify(STATS), false);}catch(e){}
+}
+function recordResult(id,grade){ // grade: 'r','p','f'
+  const s=STATS[id]||(STATS[id]={r:0,p:0,f:0});
+  s[grade]=(s[grade]||0)+1; saveStats();
+}
+function themeStats(){
+  const m={}; THEMEN.forEach(t=>m[t.k]={att:0,score:0,max:0});
+  for(const f of FRAGEN){
+    const s=STATS[f.id]; if(!s) continue;
+    const att=s.r+s.p+s.f; if(!att) continue;
+    m[f.t].att+=att;
+    m[f.t].score+=s.r*1+s.p*0.5;
+    m[f.t].max+=att;
+  }
+  return m;
+}
+
+/* ---------- Helfer ---------- */
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const tName=k=>(THEMEN.find(t=>t.k===k)||{}).n||k;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function noteFor(p){ // Prozent -> Note
+  const t=[[95,"1,0"],[90,"1,3"],[85,"1,7"],[80,"2,0"],[75,"2,3"],[70,"2,7"],[65,"3,0"],[60,"3,3"],[55,"3,7"],[50,"4,0"]];
+  for(const[g,n]of t) if(p>=g) return n; return "5,0";
+}
+function noteColor(n){const v=parseFloat(n.replace(",",".")); return v<=2.0?"var(--green)":v<=3.3?"var(--amber)":"var(--red)";}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function typLabel(t){return t==="skizze"?"Skizze":t==="calc"?"Rechnung":"Text";}
+
+/* ---------- Tabs ---------- */
+let VIEW="lern";
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+  VIEW=b.dataset.v;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===b));
+  render();
+});
+
+/* ---------- Lernmodus ---------- */
+let lernSel=new Set(THEMEN.map(t=>t.k));
+let lernQueue=[],lernIdx=0,lernRevealed=false;
+
+function renderLern(){
+  const counts={}; THEMEN.forEach(t=>counts[t.k]=0);
+  FRAGEN.forEach(f=>counts[f.t]++);
+  app.innerHTML=`
+    <p class="eyebrow">01 · Lernmodus — Themen wählen, sofortige Korrektur</p>
+    <div class="card" style="padding:14px 16px">
+      <div class="spread"><span class="muted">Themen auswählen</span>
+        <div class="row">
+          <button class="btn ghost" id="selAll">Alle</button>
+          <button class="btn ghost" id="selNone">Keine</button>
+        </div>
+      </div>
+      <div class="chips" id="chips">
+        ${THEMEN.map(t=>`<button class="chip ${lernSel.has(t.k)?"on":""}" data-k="${t.k}">${t.n}<span class="ct">${counts[t.k]}</span></button>`).join("")}
+      </div>
+      <hr class="dim">
+      <div class="spread">
+        <span class="mono muted" id="lernCount"></span>
+        <button class="btn primary" id="startLern">Lernen starten →</button>
+      </div>
+    </div>`;
+  $("#chips").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    const k=c.dataset.k; lernSel.has(k)?lernSel.delete(k):lernSel.add(k);
+    c.classList.toggle("on"); updLernCount();
+  });
+  $("#selAll").onclick=()=>{lernSel=new Set(THEMEN.map(t=>t.k));renderLern();};
+  $("#selNone").onclick=()=>{lernSel=new Set();renderLern();};
+  $("#startLern").onclick=startLern;
+  updLernCount();
+}
+function updLernCount(){
+  const n=FRAGEN.filter(f=>lernSel.has(f.t)).length;
+  $("#lernCount").textContent=n+" Fragen ausgewählt";
+  $("#startLern").disabled=n===0;
+}
+function startLern(){
+  lernQueue=shuffle(FRAGEN.filter(f=>lernSel.has(f.t)));
+  lernIdx=0; lernRevealed=false; renderLernQ();
+}
+function renderLernQ(){
+  if(lernIdx>=lernQueue.length){ renderLernDone(); return; }
+  const q=lernQueue[lernIdx];
+  app.innerHTML=`
+    <div class="spread" style="margin-bottom:10px">
+      <span class="eyebrow" style="margin:0">01 · Lernmodus</span>
+      <span class="mono muted">${lernIdx+1} / ${lernQueue.length}</span>
+    </div>
+    <div class="pbar" style="margin-bottom:14px"><i style="width:${(lernIdx/lernQueue.length)*100}%"></i></div>
+    <div class="card">
+      <div class="qhead"><span class="qtag">${tName(q.t)}</span>
+        <span><span class="qtyp">${typLabel(q.typ)}</span> &nbsp; <span class="qpts mono">${q.p} P</span></span></div>
+      <div class="qbody"><p class="qtext">${esc(q.f)}</p></div>
+      <div id="ansArea"></div>
+      <div class="qactions" id="actArea">
+        <button class="btn primary" id="revBtn" style="flex:1">Lösung anzeigen</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn ghost" id="exitLern">← Beenden</button>
+    </div>`;
+  $("#exitLern").onclick=()=>renderLern();
+  $("#revBtn").onclick=revealLern;
+}
+function revealLern(){
+  const q=lernQueue[lernIdx];
+  $("#ansArea").innerHTML=`<div class="answer"><span class="alabel">Musterlösung</span>${
+    q.typ==="skizze"?'<div class="skizze-note">▣ Skizzenaufgabe — Selbstkontrolle anhand der Beschreibung</div>':""
+  }${esc(q.a)}</div>`;
+  $("#actArea").innerHTML=`
+    <button class="grade g-r" data-g="r">Gewusst</button>
+    <button class="grade g-p" data-g="p">Teilweise</button>
+    <button class="grade g-f" data-g="f">Nicht gewusst</button>`;
+  $("#actArea").querySelectorAll(".grade").forEach(b=>b.onclick=()=>{
+    recordResult(q.id,b.dataset.g); lernIdx++; renderLernQ();
+  });
+}
+function renderLernDone(){
+  app.innerHTML=`
+    <div class="card center" style="padding:40px 20px">
+      <p class="eyebrow">Durchlauf abgeschlossen</p>
+      <div class="scorebig" style="color:var(--cyan)">${lernQueue.length}</div>
+      <p class="muted">Fragen bearbeitet · Fortschritt in Statistik gespeichert</p>
+      <div class="row" style="justify-content:center;margin-top:18px">
+        <button class="btn primary" id="again">Neue Auswahl</button>
+        <button class="btn" id="toStat">Statistik ansehen</button>
+      </div>
+    </div>`;
+  $("#again").onclick=()=>renderLern();
+  $("#toStat").onclick=()=>{document.querySelector('.tab[data-v="stat"]').click();};
+}
+
+/* ---------- Prüfungsmodus ---------- */
+const EXAM_TARGET=80, EXAM_MIN=150*60;
+let exam=null,timerId=null;
+
+function genExam(){
+  const byT={}; THEMEN.forEach(t=>byT[t.k]=shuffle(FRAGEN.filter(f=>f.t===t.k)));
+  const order=shuffle(THEMEN.map(t=>t.k));
+  const picked=[]; let total=0,i=0,guard=0;
+  while(total<EXAM_TARGET && guard<1000){
+    const k=order[i%order.length];
+    if(byT[k].length){const q=byT[k].shift(); picked.push(q); total+=q.p;}
+    i++; guard++;
+    if(order.every(k=>byT[k].length===0)) break;
+  }
+  return {qs:shuffle(picked),total,answers:{},idx:0,start:Date.now(),done:false};
+}
+function renderPruefStart(){
+  app.innerHTML=`
+    <p class="eyebrow">02 · Prüfungsmodus — Simulierte Klausur</p>
+    <div class="card" style="padding:20px 18px">
+      <div class="statgrid" style="margin-bottom:16px">
+        <div class="metric"><div class="v mono">80 P</div><div class="l">Gesamtumfang</div></div>
+        <div class="metric"><div class="v mono">150:00</div><div class="l">Zeitlimit (min)</div></div>
+      </div>
+      <p class="muted" style="font-size:13.5px">Zufällige, über alle 14 Themen gleichmäßig verteilte Auswahl. Lösungen erst nach Abgabe. Selbstbewertung am Ende → Punkte, Prozent und Note (1,0–5,0).</p>
+      <button class="btn orange" id="startExam" style="width:100%;margin-top:8px;padding:13px">Klausur generieren & starten →</button>
+    </div>`;
+  $("#startExam").onclick=()=>{exam=genExam();exam.idx=0;startTimer();renderExamQ();};
+}
+function startTimer(){
+  clearInterval(timerId);
+  timerId=setInterval(()=>{
+    if(!exam||exam.done){clearInterval(timerId);return;}
+    const left=EXAM_MIN-Math.floor((Date.now()-exam.start)/1000);
+    const el=$("#timer");
+    if(el){
+      const m=Math.max(0,Math.floor(left/60)),s=Math.max(0,left%60);
+      el.textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+      el.className="timer"+(left<300?" crit":left<900?" warn":"");
+    }
+    if(left<=0) finishExam();
+  },1000);
+}
+function renderExamQ(){
+  const q=exam.qs[exam.idx], n=exam.qs.length;
+  const answered=Object.keys(exam.answers).length;
+  app.innerHTML=`
+    <div class="spread" style="margin-bottom:10px">
+      <span class="timer" id="timer">150:00</span>
+      <span class="mono muted">Frage ${exam.idx+1} / ${n} · ${answered} markiert · ${exam.total} P</span>
+    </div>
+    <div class="pbar" style="margin-bottom:14px"><i style="width:${((exam.idx+1)/n)*100}%"></i></div>
+    <div class="card">
+      <div class="qhead"><span class="qtag">${tName(q.t)}</span>
+        <span><span class="qtyp">${typLabel(q.typ)}</span> &nbsp; <span class="qpts mono">${q.p} P</span></span></div>
+      <div class="qbody"><p class="qtext">${esc(q.f)}</p>
+        <p class="mono muted" style="font-size:12px">${q.typ==="skizze"?"Skizze auf Papier anfertigen — am Ende selbst bewerten.":"Antwort gedanklich/auf Papier formulieren."}</p>
+      </div>
+      <div class="qactions">
+        <button class="btn ghost" id="prev" ${exam.idx===0?"disabled":""}>← Zurück</button>
+        <button class="btn ${exam.idx===n-1?"orange":"primary"}" id="next" style="flex:1">${exam.idx===n-1?"Klausur abgeben":"Weiter →"}</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn ghost" id="abort">Abbrechen</button>
+      <button class="btn ghost" id="submitAny" style="margin-left:auto">Jetzt abgeben & auswerten</button>
+    </div>`;
+  $("#prev").onclick=()=>{if(exam.idx>0){exam.idx--;renderExamQ();}};
+  $("#next").onclick=()=>{if(exam.idx<n-1){exam.idx++;renderExamQ();}else finishExam();};
+  $("#abort").onclick=()=>{if(confirm("Klausur abbrechen? Fortschritt geht verloren.")){clearInterval(timerId);exam=null;renderPruefStart();}};
+  $("#submitAny").onclick=finishExam;
+}
+function finishExam(){
+  clearInterval(timerId); exam.done=true; exam.evalIdx=0; renderExamEval();
+}
+function renderExamEval(){
+  // self-grade each question
+  if(exam.evalIdx>=exam.qs.length){ renderExamResult(); return; }
+  const q=exam.qs[exam.evalIdx], n=exam.qs.length;
+  app.innerHTML=`
+    <div class="spread" style="margin-bottom:10px">
+      <span class="eyebrow" style="margin:0">Auswertung — selbst bewerten</span>
+      <span class="mono muted">${exam.evalIdx+1} / ${n}</span>
+    </div>
+    <div class="pbar" style="margin-bottom:14px"><i style="width:${((exam.evalIdx+1)/n)*100}%"></i></div>
+    <div class="card">
+      <div class="qhead"><span class="qtag">${tName(q.t)}</span><span class="qpts mono">${q.p} P</span></div>
+      <div class="qbody"><p class="qtext">${esc(q.f)}</p></div>
+      <div class="answer"><span class="alabel">Musterlösung</span>${esc(q.a)}</div>
+      <div class="qactions">
+        <button class="grade g-r" data-g="r">Voll (${q.p} P)</button>
+        <button class="grade g-p" data-g="p">Halb (${(q.p/2).toFixed(1)} P)</button>
+        <button class="grade g-f" data-g="f">Falsch (0 P)</button>
+      </div>
+    </div>`;
+  app.querySelectorAll(".grade").forEach(b=>b.onclick=()=>{
+    const g=b.dataset.g; exam.answers[q.id]=g; recordResult(q.id,g);
+    exam.evalIdx++; renderExamEval();
+  });
+}
+function renderExamResult(){
+  let score=0; const max=exam.total; const perT={};
+  for(const q of exam.qs){
+    const g=exam.answers[q.id]||"f";
+    const pts=g==="r"?q.p:g==="p"?q.p/2:0;
+    score+=pts;
+    const t=perT[q.t]||(perT[q.t]={s:0,m:0}); t.s+=pts; t.m+=q.p;
+  }
+  const pct=max?Math.round(score/max*100):0;
+  const note=noteFor(pct);
+  const tRows=Object.keys(perT).sort((a,b)=>(perT[a].s/perT[a].m)-(perT[b].s/perT[b].m)).map(k=>{
+    const r=perT[k],p=Math.round(r.s/r.m*100),c=p>=70?"var(--green)":p>=50?"var(--amber)":"var(--red)";
+    return `<div class="trow"><div><div class="tname">${tName(k)}</div><div class="bar"><i style="width:${p}%;background:${c}"></i></div></div><div class="tpct">${r.s.toFixed(1)}/${r.m} · ${p}%</div></div>`;
+  }).join("");
+  app.innerHTML=`
+    <p class="eyebrow">02 · Klausurergebnis</p>
+    <div class="card" style="padding:24px 18px">
+      <div class="statgrid">
+        <div class="center"><div class="scorebig" style="color:var(--cyan)">${score.toFixed(1)}<span style="font-size:24px;color:var(--dim)">/${max}</span></div><div class="l" style="color:var(--dim);font-size:11px;letter-spacing:1.5px;margin-top:6px">PUNKTE · ${pct}%</div></div>
+        <div class="center"><div class="note" style="color:${noteColor(note)}">${note}</div><div class="l" style="color:var(--dim);font-size:11px;letter-spacing:1.5px;margin-top:6px">NOTE</div></div>
+      </div>
+      <div class="bar" style="height:9px;margin-top:18px"><i style="width:${pct}%;background:${noteColor(note)}"></i></div>
+    </div>
+    <div class="card" style="padding:16px 18px">
+      <p class="eyebrow">Fehlerübersicht nach Thema</p>
+      <div class="tlist">${tRows}</div>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <button class="btn primary" id="newExam">Neue Klausur</button>
+      <button class="btn" id="toStat2">Gesamtstatistik</button>
+    </div>`;
+  $("#newExam").onclick=()=>{exam=null;renderPruefStart();};
+  $("#toStat2").onclick=()=>{document.querySelector('.tab[data-v="stat"]').click();};
+}
+
+/* ---------- Statistik ---------- */
+function renderStat(){
+  const m=themeStats();
+  let totAtt=0,totScore=0,totMax=0;
+  const rows=[];
+  for(const t of THEMEN){
+    const x=m[t.k]; totAtt+=x.att; totScore+=x.score; totMax+=x.max;
+    const pct=x.max?Math.round(x.score/x.max*100):null;
+    rows.push({k:t.k,n:t.n,att:x.att,pct});
+  }
+  const overall=totMax?Math.round(totScore/totMax*100):0;
+  const done=rows.filter(r=>r.att>0);
+  const ranked=done.filter(r=>r.pct!=null).sort((a,b)=>b.pct-a.pct);
+  const strong=ranked.slice(0,3), weak=ranked.slice().reverse().slice(0,3);
+  const empty=totAtt===0;
+
+  const themeRows=rows.map(r=>{
+    const c=r.pct==null?"var(--dim2)":r.pct>=70?"var(--green)":r.pct>=50?"var(--amber)":"var(--red)";
+    return `<div class="trow">
+      <div><div class="tname">${r.n}</div><div class="bar"><i style="width:${r.pct||0}%;background:${c}"></i></div></div>
+      <div class="tpct">${r.att?r.pct+"% · "+r.att+"×":"—"}</div></div>`;
+  }).join("");
+
+  app.innerHTML=`
+    <p class="eyebrow">03 · Statistik — dauerhaft gespeichert</p>
+    ${empty?`<div class="card center" style="padding:40px 20px"><p class="muted">Noch keine Daten. Starte den Lern- oder Prüfungsmodus.</p></div>`:`
+    <div class="statgrid" style="margin-bottom:14px">
+      <div class="metric"><div class="v mono" style="color:var(--cyan)">${overall}%</div><div class="l">Erfolgsquote gesamt</div></div>
+      <div class="metric"><div class="v mono">${totAtt}</div><div class="l">Bearbeitungen</div></div>
+    </div>
+    <div class="statgrid" style="margin-bottom:14px">
+      <div class="metric"><div class="l" style="margin:0 0 10px;color:var(--green)">Stärkste Themen</div>
+        ${strong.length?strong.map(r=>`<div class="spread" style="margin-bottom:4px"><span style="font-size:13px">${r.n}</span><span class="mono" style="color:var(--green);font-size:12px">${r.pct}%</span></div>`).join(""):'<span class="muted">—</span>'}</div>
+      <div class="metric"><div class="l" style="margin:0 0 10px;color:var(--red)">Schwächste Themen</div>
+        ${weak.length?weak.map(r=>`<div class="spread" style="margin-bottom:4px"><span style="font-size:13px">${r.n}</span><span class="mono" style="color:var(--red);font-size:12px">${r.pct}%</span></div>`).join(""):'<span class="muted">—</span>'}</div>
+    </div>
+    <div class="card" style="padding:14px 16px;margin-bottom:14px">
+      <p class="eyebrow">Lernempfehlung</p>
+      <p style="margin:0;font-size:14px">${weak.length?`Fokus auf <b style="color:var(--red)">${weak[0].n}</b>${weak[1]?` und <b style="color:var(--amber)">${weak[1].n}</b>`:""}. ${rows.filter(r=>r.att===0).length?`Noch ungeübt: <span class="muted">${rows.filter(r=>r.att===0).map(r=>r.n).join(", ")}</span>.`:"Alle Themen mindestens einmal bearbeitet."}`:"Bearbeite mehr Fragen für eine Empfehlung."}</p>
+    </div>
+    <div class="card" style="padding:14px 16px">
+      <p class="eyebrow">Alle Themen</p>
+      <div class="tlist">${themeRows}</div>
+    </div>`}
+    <div class="row" style="margin-top:14px">
+      <button class="btn ghost" id="reset">Statistik zurücksetzen</button>
+    </div>`;
+  $("#reset").onclick=async()=>{
+    if(confirm("Gesamte Statistik löschen?")){STATS={};await saveStats();renderStat();}
+  };
+}
+
+/* ---------- Router ---------- */
+function render(){
+  if(VIEW==="lern") renderLern();
+  else if(VIEW==="pruef"){ if(exam&&!exam.done) renderExamQ(); else if(exam&&exam.done) renderExamResult(); else renderPruefStart(); }
+  else renderStat();
+}
+(async()=>{ await loadStats(); render(); })();
+</script>
